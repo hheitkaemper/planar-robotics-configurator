@@ -1,0 +1,10 @@
+[project]
+name = "planar-robotics-configurator"
+version = "0.1"
+description = "A library for configure algorithms and enviroments for RL with planar robotics"
+readme = "README.md"
+authors = [{name = "Hannes Heitkämper genannt Höllmann", email = "hannes.heitkaemper@uni-bielefeld.de"}]
+requires-python = ">=3.11"
+dependencies = [
+    "numpy"
+]
