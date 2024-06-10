@@ -1,6 +1,6 @@
 from kivy import Config
 from kivymd.app import MDApp
-from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.screen import MDScreen
 
 from planar_robotics_configurator.view.environment.environment_component import EnvironmentComponent
@@ -19,12 +19,13 @@ class ConfiguratorApp(MDApp):
         Config.set('input', 'mouse', 'mouse,disable_multitouch')
         screen = MDScreen()
         screen.md_bg_color = "373737"
-        self.layout = MDBoxLayout(orientation='vertical')
+        self.layout = MDGridLayout(cols=1, orientation='lr-bt')
         nav = NavigationComponent(self)
-        nav.add_tab("Simulation", SimulationComponent())
-        nav.add_tab("Environment", EnvironmentComponent())
+        sim = SimulationComponent()
+        nav.add_tab("Simulation", sim)
+        nav.add_tab("Environment", EnvironmentComponent(self))
         self.layout.add_widget(nav)
-        self.set_view(SimulationComponent())
+        self.set_view(sim)
         screen.add_widget(self.layout)
         return screen
 
@@ -32,5 +33,4 @@ class ConfiguratorApp(MDApp):
         if self.view is not None:
             self.layout.remove_widget(self.view)
         self.view = widget
-        self.layout.add_widget(self.view)
-        pass
+        self.layout.add_widget(self.view, 1)
