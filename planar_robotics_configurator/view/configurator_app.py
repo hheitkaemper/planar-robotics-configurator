@@ -23,7 +23,7 @@ class ConfiguratorApp(MDApp):
         nav = NavigationComponent(self)
         sim = SimulationComponent()
         nav.add_tab("Simulation", sim)
-        nav.add_tab("Environment", EnvironmentComponent(self))
+        nav.add_tab("Environment", EnvironmentComponent())
         self.layout.add_widget(nav)
         self.set_view(sim)
         screen.add_widget(self.layout)
