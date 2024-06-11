@@ -13,6 +13,7 @@ class NavigationComponent(MDTabs):
         super(NavigationComponent, self).__init__(**kwargs)
         self.app = app
         self.lock_swiping = True
+        self.anim_duration = 0
         self.background_color = "2F2F2F"
         self.size_hint = 1, None
         self.height = self.tab_bar_height

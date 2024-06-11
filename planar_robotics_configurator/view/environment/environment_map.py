@@ -1,3 +1,4 @@
+from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle
 from kivy.graphics.transformation import Matrix
 from kivy.input import MotionEvent
@@ -18,6 +19,19 @@ class EnvironmentScatter(Scatter):
 
     def collide_point(self, x, y):
         return True
+
+    def on_touch_down(self, touch: MotionEvent):
+        if "button" not in touch.profile or touch.button not in ["middle", "right"]:
+            return True
+        Window.set_system_cursor("size_all")
+        touch.grab(self)
+        return super().on_touch_down(touch)
+
+    def on_touch_up(self, touch: MotionEvent):
+        if touch.grab_current == self:
+            touch.ungrab(self)
+            Window.set_system_cursor("arrow")
+        return super().on_touch_up(touch)
 
 
 class EnvironmentMap(MDWidget):
