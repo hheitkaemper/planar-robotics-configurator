@@ -35,6 +35,10 @@ class EnvironmentScatter(Scatter):
 
 
 class EnvironmentMap(MDWidget):
+    """
+    Defines a map which can be moved by middle and right click and zoomed with scoll-wheel.
+    Thous transformations are automatically applied to all canvas which are drawn to self.scatter.
+    """
 
     def __init__(self):
         super().__init__()
