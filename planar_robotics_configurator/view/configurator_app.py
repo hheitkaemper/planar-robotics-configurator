@@ -1,5 +1,3 @@
-from kivy import Config
-from kivy.core.window import Window
 from kivymd.app import MDApp
 from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.screen import MDScreen
@@ -17,8 +15,6 @@ class ConfiguratorApp(MDApp):
         self.view = None
 
     def build(self):
-        Config.set('input', 'mouse', 'mouse,disable_multitouch')
-        Window.size = (1600, 1200)
         screen = MDScreen()
         screen.theme_cls.theme_style = "Dark"
         screen.md_bg_color = "373737"

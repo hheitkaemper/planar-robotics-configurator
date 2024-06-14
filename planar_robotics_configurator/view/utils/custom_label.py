@@ -1,3 +1,4 @@
+from kivy.metrics import dp
 from kivymd.uix.button import MDFlatButton
 
 
@@ -9,7 +10,7 @@ class CustomLabel(MDFlatButton):
 
     def __init__(self, **kwargs):
         self.md_bg_color = (0, 0, 0, 0)
-        self.font_size = 16
+        self.font_size = dp(16)
         super().__init__(**kwargs)
 
     def on_press(self):
