@@ -11,6 +11,10 @@ from planar_robotics_configurator.model.environment.environment import Environme
 
 
 class EnvironmentScatter(Scatter):
+    """
+    Environment layer in which all environment objects are drawn.
+    Is possible to transform in x and y direction by dragging the environment with right and middle click.
+    """
 
     def __init__(self, **kwargs):
         super(EnvironmentScatter, self).__init__(**kwargs)
@@ -84,7 +88,7 @@ class EnvironmentMap(MDWidget):
             self.scale_at(-1, *touch.pos)
             return True
         if "button" in touch.profile and touch.button == "left" and self.environment is not None:
-            pos = self.to_tile_position(*touch.pos)
+            pos = self.screen_to_tile_position(*touch.pos)
             if 0 <= pos[0] < self.environment.num_width and 0 <= pos[1] < self.environment.num_length:
                 self.environment.set_tile(*pos, 1 - self.environment.get_tile(*pos))
                 self.remove_hover_tile()
@@ -99,7 +103,7 @@ class EnvironmentMap(MDWidget):
         """
         if self.environment is None:
             return
-        pos = self.to_tile_position(*pos)
+        pos = self.screen_to_tile_position(*pos)
         if 0 <= pos[0] < self.environment.num_width and 0 <= pos[1] < self.environment.num_length:
             self.draw_hover_tile(*pos)
         else:
@@ -130,8 +134,9 @@ class EnvironmentMap(MDWidget):
             self.hover_tile_color.rgba = (0.65, 1, 0.56, 1)
         self.hover_tile.x = x
         self.hover_tile.y = y
-        self.hover_tile.pos = self.from_tile_position(x + 0.05, y + 0.05)
-        self.hover_tile.size = (self.environment.tile_width * 0.9, self.environment.tile_length * 0.9)
+        self.hover_tile.pos = self.tile_position_to_scatter(x + 0.05, y + 0.05)
+        self.hover_tile.size = self.environment_to_scatter(self.environment.tile_width * 0.9,
+                                                           self.environment.tile_length * 0.9)
 
     def scale_at(self, scale: float, x: float, y: float) -> None:
         """
@@ -164,8 +169,8 @@ class EnvironmentMap(MDWidget):
         self.scatter.tiles_background_canvas.clear()
         with self.scatter.tiles_background_canvas:
             Color(0.16, 0.16, 0.16, 1)
-            Rectangle(pos=(0, 0), size=(self.environment.num_width * self.environment.tile_width,
-                                        self.environment.num_length * self.environment.tile_length))
+            Rectangle(pos=(0, 0),
+                      size=self.tile_position_to_scatter(self.environment.num_width, self.environment.num_length))
 
     def redraw_tile(self, x, y) -> None:
         """
@@ -173,7 +178,7 @@ class EnvironmentMap(MDWidget):
         :param x: x position of the tile.
         :param y: y position of the tile.
         """
-        pos = (self.environment.tile_width * (x + 0.05), self.environment.tile_length * (y + 0.05))
+        pos = self.tile_position_to_scatter(x + 0.05, y + 0.05)
         self.scatter.tiles_canvas.children[:] = [c for c in self.scatter.tiles_canvas.children
                                                  if not (isinstance(c, Rectangle) and c.pos == pos)]
         self.draw_tile(x, y)
@@ -189,8 +194,9 @@ class EnvironmentMap(MDWidget):
                 Color(0.49, 0.49, 0.49, 1)
             else:
                 Color(0.2, 0.2, 0.2, 1)
-            Rectangle(pos=(self.environment.tile_width * (x + 0.05), self.environment.tile_length * (y + 0.05)),
-                      size=(self.environment.tile_width * 0.9, self.environment.tile_length * 0.9))
+            Rectangle(pos=self.tile_position_to_scatter(x + 0.05, y + 0.05),
+                      size=self.environment_to_scatter(self.environment.tile_width * 0.9,
+                                                       self.environment.tile_length * 0.9))
 
     def draw_tiles(self) -> None:
         """
@@ -201,7 +207,20 @@ class EnvironmentMap(MDWidget):
             for y in range(0, self.environment.num_length):
                 self.draw_tile(x, y)
 
-    def from_tile_position(self, x, y) -> (int, int):
+    def tile_position_to_scatter(self, x, y) -> (int, int):
+        """
+        Converts coordinates in tiles coordinate-system to scatter coordinate-system.
+        Args:
+            x: x coordinate in tiles coordinate-system.
+            y: y coordinate in tiles coordinate-system.
+
+        Returns:
+            (x, y) with x, y in scatter coordinate-system.
+        """
+        x, y = self.tile_position_to_environment(x, y)
+        return y, x
+
+    def tile_position_to_environment(self, x, y) -> (int, int):
         """
         Converts coordinates in tiles coordinate-system to environment coordinate-system.
         Args:
@@ -215,7 +234,7 @@ class EnvironmentMap(MDWidget):
         y = y * self.environment.tile_length
         return x, y
 
-    def to_tile_position(self, x, y) -> (int, int):
+    def screen_to_tile_position(self, x, y) -> (int, int):
         """
         Converts coordinates in screen coordinate-system to tile coordinate-system.
         Args:
@@ -225,12 +244,12 @@ class EnvironmentMap(MDWidget):
         Returns:
             (x, y) with x, y in tiles coordinate-system.
         """
-        x, y = self.to_environment(x, y)
+        x, y = self.screen_to_environment(x, y)
         x = int(x // self.environment.tile_width)
         y = int(y // self.environment.tile_length)
         return x, y
 
-    def to_environment(self, x, y) -> (float, float):
+    def screen_to_environment(self, x, y) -> (float, float):
         """
         Converts coordinates in screen coordinate-system to environment coordinate-system.
         Args:
@@ -241,4 +260,16 @@ class EnvironmentMap(MDWidget):
             (x, y) with x, y in environment coordinate-system.
         """
         x, y, z = self.scatter.transform_inv.transform_point(x, y, 0)
-        return x, -y
+        return -y, x
+
+    def environment_to_scatter(self, x, y) -> (float, float):
+        """
+        Converts coordinates in environment coordinate-system to scatter coordinate-system.
+        Args:
+            x: x coordinate in environment.
+            y: y coordinate in environment.
+
+        Returns:
+            (x, y) with x, y in scatter coordinate-system.
+        """
+        return y, x

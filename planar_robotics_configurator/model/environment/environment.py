@@ -10,11 +10,11 @@ class Environment:
     """
     Represents a planar robotics environment.
     :param name: Name of the environment. Used to identify the environment.
-    :param num_width: Width number of tiles for the environment.
-    :param num_length: Length number of tiles for the environment.
+    :param num_width: Width number of tiles for the environment in x direction.
+    :param num_length: Length number of tiles for the environment in y direction.
     :param tiles: [num_width, num_length] Array of int. 1 for a tile at the position, 0 else
-    :param tile_width: width (cm) of the tiles in the environment.
-    :param tile_length: length (cm) of the tiles in the environment.
+    :param tile_width: width (cm) of the tiles in the environment in x direction.
+    :param tile_length: length (cm) of the tiles in the environment in y direction.
     :param table_height: height of the table in the environment.
     :param std_noise: Standard deviation of the noise in the environment.
     """
