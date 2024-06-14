@@ -1,6 +1,9 @@
 from dataclasses import dataclass, field
 import numpy as np
 
+from planar_robotics_configurator.model.environment.mover import Mover
+from planar_robotics_configurator.model.environment.working_station import WorkingStation
+
 
 @dataclass(frozen=False)
 class Environment:
@@ -23,3 +26,33 @@ class Environment:
     tile_length: float = 25
     table_height: float = 50
     std_noise: float = 0.5
+    working_stations: list[WorkingStation] = field(default_factory=list)
+    movers: list[Mover] = field(default_factory=list)
+
+    def __post_init__(self):
+        self.init_tiles()
+
+    def init_tiles(self):
+        """
+        Creates the tiles of the environment.
+        Sets all tiles to zero, which represents a not existing tile.
+        """
+        self.tiles = np.zeros((self.num_width, self.num_length), dtype=int)
+
+    def get_tile(self, x, y) -> bool:
+        """
+        Gets a tile at position x, y in the tile coordinate-system.
+        :param x: x coordinate of the tile.
+        :param y: y coordinate of the tile.
+        """
+        return self.tiles[x, y]
+
+    def set_tile(self, x, y, value):
+        """
+        Sets the value of a tile at position x, y in the tile coordinate-system.
+        :param x: x coordinate of the tile.
+        :param y: y coordinate of the tile.
+        :param value: value of the tile, this value should only be 0 for not existing and 1 for existing tile.
+        """
+        assert value in [0, 1]
+        self.tiles[x, y] = value
