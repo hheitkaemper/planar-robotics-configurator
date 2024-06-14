@@ -45,6 +45,7 @@ class EnvironmentSelection(MDAnchorLayout):
 
     def select_item(self, environment: Environment):
         self.dropdown_item.set_item(environment.name)
+        self.parent.set_environment(environment)
         self.dropdown_menu.dismiss()
 
 
@@ -58,3 +59,7 @@ class EnvironmentComponent(MDFloatLayout):
         self.size_hint = 1, 1
         self.add_widget(EnvironmentMap())
         self.add_widget(EnvironmentSelection())
+
+    def set_environment(self, environment: Environment):
+        self.environment = environment
+        self.map.set_environment(environment)
