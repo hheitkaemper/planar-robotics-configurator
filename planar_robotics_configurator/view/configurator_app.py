@@ -1,3 +1,5 @@
+from kivy.clock import Clock
+from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.screen import MDScreen
@@ -5,6 +7,7 @@ from kivymd.uix.screen import MDScreen
 from planar_robotics_configurator.view.environment.environment_component import EnvironmentComponent
 from planar_robotics_configurator.view.navigation_component import NavigationComponent
 from planar_robotics_configurator.view.simulation.simulation_component import SimulationComponent
+from planar_robotics_configurator.view.utils import Component
 
 
 class ConfiguratorApp(MDApp):
@@ -28,8 +31,9 @@ class ConfiguratorApp(MDApp):
         screen.add_widget(self.layout)
         return screen
 
-    def set_view(self, widget):
+    def set_view(self, widget: (Component, Widget)):
         if self.view is not None:
             self.layout.remove_widget(self.view)
         self.view = widget
         self.layout.add_widget(self.view, 1)
+        Clock.schedule_once(widget.on_select)

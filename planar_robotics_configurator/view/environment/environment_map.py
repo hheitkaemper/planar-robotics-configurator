@@ -1,3 +1,4 @@
+import numpy as np
 from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle
 from kivy.graphics.context_instructions import Scale
@@ -60,23 +61,21 @@ class EnvironmentMap(MDWidget):
     Draws the given environment.
     """
 
-    def __init__(self, environment):
+    def __init__(self):
         super().__init__()
         Window.bind(mouse_pos=self.on_mouse_over)
-        self.size_hint = 1, 1
         self.scatter = EnvironmentScatter()
         self.environment: Environment | None = None
         # Kivy coordinate system to environment coordinate system
         with self.scatter.canvas.before:
+            # self.scatter.center_trans = Translate(x=200, y=100)
             Scale(1, -1, 1)
         with self.scatter.canvas:
             self.scatter.tiles_background_canvas = Canvas()
             self.scatter.tiles_canvas = Canvas()
-            self.hover_tile_color = Color(0, 0, 0, 0)
-            self.hover_tile = HoverTile(-1, -1, pos=(0, 0), size=(1, 1))
+            self.scatter.hover_tile_color = Color(0, 0, 0, 0)
+            self.scatter.hover_tile = HoverTile(-1, -1, pos=(0, 0), size=(1, 1))
         self.add_widget(self.scatter)
-        if environment is not None:
-            self.set_environment(environment)
 
     def on_touch_down(self, touch: MotionEvent):
         if not self.collide_point(*touch.pos):
@@ -113,9 +112,9 @@ class EnvironmentMap(MDWidget):
         """
         Hide the hover tile to the user. Removes the color and sets the position of the hover tile to (-1, -1)
         """
-        self.hover_tile_color.a = 0
-        self.hover_tile.x = -1
-        self.hover_tile.y = -1
+        self.scatter.hover_tile_color.a = 0
+        self.scatter.hover_tile.x = -1
+        self.scatter.hover_tile.y = -1
 
     def draw_hover_tile(self, x, y):
         """
@@ -124,19 +123,19 @@ class EnvironmentMap(MDWidget):
         :param x: x position of the hovered tile.
         :param y: y position of the hovered tile.
         """
-        if self.hover_tile.x == x and self.hover_tile.y == y:
+        if self.scatter.hover_tile.x == x and self.scatter.hover_tile.y == y:
             return
         if self.environment.get_tile(x, y) == 1:
             # Red
-            self.hover_tile_color.rgba = (1, 0.45, 0.45, 1)
+            self.scatter.hover_tile_color.rgba = (1, 0.45, 0.45, 1)
         else:
             # Green
-            self.hover_tile_color.rgba = (0.65, 1, 0.56, 1)
-        self.hover_tile.x = x
-        self.hover_tile.y = y
-        self.hover_tile.pos = self.tile_position_to_scatter(x + 0.05, y + 0.05)
-        self.hover_tile.size = self.environment_to_scatter(self.environment.tile_width * 0.9,
-                                                           self.environment.tile_length * 0.9)
+            self.scatter.hover_tile_color.rgba = (0.65, 1, 0.56, 1)
+        self.scatter.hover_tile.x = x
+        self.scatter.hover_tile.y = y
+        self.scatter.hover_tile.pos = self.tile_position_to_scatter(x + 0.05, y + 0.05)
+        self.scatter.hover_tile.size = self.environment_to_scatter(self.environment.tile_width * 0.9,
+                                                                   self.environment.tile_length * 0.9)
 
     def scale_at(self, scale: float, x: float, y: float) -> None:
         """
@@ -158,9 +157,21 @@ class EnvironmentMap(MDWidget):
         :param environment: Environment which should be drawn.
         """
         self.environment = environment
+        self.center_map()
         self.remove_hover_tile()
         self.draw_tiles_background()
         self.draw_tiles()
+
+    def center_map(self):
+        """
+        Centers the map to the center of the screen.
+        """
+        x, y = self.tile_position_to_scatter(self.environment.num_width, self.environment.num_length)
+        temp = self.scatter.scale
+        self.scatter.scale = 1
+        self.scatter.set_center_x(self.center_x + 50 - x / 2)
+        self.scatter.set_center_y(self.center_y + 50 + y / 2)
+        self.scale_at(np.emath.logn(1.5, temp), self.center_x, self.center_y)
 
     def draw_tiles_background(self):
         """
@@ -259,7 +270,7 @@ class EnvironmentMap(MDWidget):
         Returns:
             (x, y) with x, y in environment coordinate-system.
         """
-        x, y, z = self.scatter.transform_inv.transform_point(x, y, 0)
+        x, y = self.scatter.to_local(x, y)
         return -y, x
 
     def environment_to_scatter(self, x, y) -> (float, float):

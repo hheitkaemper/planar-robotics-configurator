@@ -8,7 +8,7 @@ from kivymd.uix.menu import MDDropdownMenu
 from planar_robotics_configurator.model.configurator_model import ConfiguratorModel
 from planar_robotics_configurator.model.environment.environment import Environment
 from planar_robotics_configurator.view.environment.environment_map import EnvironmentMap
-from planar_robotics_configurator.view.utils import CustomLabel, AdaptiveDropDownItem
+from planar_robotics_configurator.view.utils import CustomLabel, AdaptiveDropDownItem, Component
 
 
 class EnvironmentSelection(MDAnchorLayout):
@@ -50,7 +50,7 @@ class EnvironmentSelection(MDAnchorLayout):
         self.dropdown_menu.dismiss()
 
 
-class EnvironmentComponent(MDFloatLayout):
+class EnvironmentComponent(MDFloatLayout, Component):
     """
     The layout for the environment site.
     """
@@ -58,11 +58,18 @@ class EnvironmentComponent(MDFloatLayout):
     def __init__(self):
         super().__init__()
         self.size_hint = 1, 1
-        self.environment: Environment | None = ConfiguratorModel().environments[0] if len(
-            ConfiguratorModel().environments) > 0 else None
-        self.map = EnvironmentMap(self.environment)
+        self.environment: Environment | None = None
+        self.map = EnvironmentMap()
         self.add_widget(self.map)
         self.add_widget(EnvironmentSelection())
+
+    def on_select(self, _):
+        if self.environment is not None:
+            return
+        if len(ConfiguratorModel().environments) == 0:
+            return
+        self.environment = ConfiguratorModel().environments[0]
+        self.map.set_environment(self.environment)
 
     def set_environment(self, environment: Environment):
         self.environment = environment
