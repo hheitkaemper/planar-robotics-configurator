@@ -4,6 +4,7 @@ from planar_robotics_configurator.model.configurator_model import ConfiguratorMo
 from planar_robotics_configurator.model.environment.environment import Environment
 from planar_robotics_configurator.view.environment.environment_map import EnvironmentMap
 from planar_robotics_configurator.view.environment.environment_selection import EnvironmentSelection
+from planar_robotics_configurator.view.environment.environment_side_bar import EnvironmentSideBar
 from planar_robotics_configurator.view.utils import Component
 
 
@@ -19,6 +20,7 @@ class EnvironmentComponent(MDFloatLayout, Component):
         self.map = EnvironmentMap()
         self.add_widget(self.map)
         self.add_widget(EnvironmentSelection(self))
+        self.add_widget(EnvironmentSideBar(self))
 
     def on_select(self, _):
         if self.environment is not None:
