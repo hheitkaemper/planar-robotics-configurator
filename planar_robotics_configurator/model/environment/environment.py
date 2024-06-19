@@ -1,9 +1,6 @@
 from dataclasses import dataclass, field
 import numpy as np
 
-from planar_robotics_configurator.model.environment.mover import Mover
-from planar_robotics_configurator.model.environment.working_station import WorkingStation
-
 
 @dataclass(frozen=False)
 class Environment:
@@ -26,8 +23,6 @@ class Environment:
     tile_length: float = 25
     table_height: float = 50
     std_noise: float = 0.5
-    working_stations: list[WorkingStation] = field(default_factory=list)
-    movers: list[Mover] = field(default_factory=list)
 
     def __post_init__(self):
         self.init_tiles()
