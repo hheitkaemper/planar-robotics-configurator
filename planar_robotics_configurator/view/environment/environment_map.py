@@ -166,6 +166,8 @@ class EnvironmentMap(MDWidget):
         """
         Centers the map to the center of the screen.
         """
+        if self.environment is None:
+            return
         x, y = self.tile_position_to_scatter(self.environment.num_width, self.environment.num_length)
         temp = self.scatter.scale
         self.scatter.scale = 1
