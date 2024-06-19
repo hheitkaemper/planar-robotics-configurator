@@ -13,3 +13,11 @@ class CustomIconButton(MDIconButton, MDTooltip):
         self.theme_text_color = "Custom"
         self.text_color = (1, 1, 1, 1)
         self.tooltip_display_delay = 1
+
+    def on_enter(self, *args):
+        self.text_color = (0.5, 0.5, 0.5, 1)
+        super().on_enter(args)
+
+    def on_leave(self):
+        self.text_color = (1, 1, 1, 1)
+        super().on_leave()

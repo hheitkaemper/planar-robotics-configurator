@@ -21,7 +21,7 @@ class Environment:
     tiles: np.ndarray[int] = field(init=False)
     tile_width: float = 25
     tile_length: float = 25
-    table_height: float = 50
+    table_height: float = 0.2
     std_noise: float = 0.5
 
     def __post_init__(self):

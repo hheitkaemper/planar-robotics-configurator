@@ -1,20 +1,17 @@
-from kivy.metrics import dp
-from kivymd.uix.button import MDFlatButton
+from kivymd.uix.label import MDLabel
 
 
-class CustomLabel(MDFlatButton):
+class CustomLabel(MDLabel):
     """
     Custom label that displays a text without any issues on line-breaks or shorten.
-    Actual a button with a transparent background color amd disabled touch events.
     """
 
-    def __init__(self, **kwargs):
-        self.md_bg_color = (0, 0, 0, 0)
-        self.font_size = dp(16)
-        super().__init__(**kwargs)
-
-    def on_press(self):
-        pass
-
-    def on_touch_down(self, touch):
-        pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.adaptive_size = True
+        self.bind(texture_size=lambda *x: self.setter("width")(
+            self, self.texture_size[0]
+        ))
+        self.bind(texture_size=lambda *x: self.setter("height")(
+            self, self.texture_size[1]
+        ))
