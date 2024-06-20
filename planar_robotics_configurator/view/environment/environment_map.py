@@ -9,6 +9,7 @@ from kivy.uix.scatter import Scatter
 from kivymd.uix.widget import MDWidget
 
 from planar_robotics_configurator.model.environment.environment import Environment
+from planar_robotics_configurator.view.utils.custom_snackbar import CustomSnackbar
 
 
 class EnvironmentScatter(Scatter):
@@ -167,6 +168,7 @@ class EnvironmentMap(MDWidget):
         Centers the map to the center of the screen.
         """
         if self.environment is None:
+            CustomSnackbar(text="Please select an environment first!").open()
             return
         x, y = self.tile_position_to_scatter(self.environment.num_width, self.environment.num_length)
         temp = self.scatter.scale

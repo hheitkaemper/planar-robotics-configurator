@@ -39,7 +39,7 @@ class EnvironmentComponent(MDFloatLayout, Component):
 
     def show_preview(self):
         if self.environment is None:
-            CustomSnackbar(text="Please select a environment first!").open()
+            CustomSnackbar(text="Please select an environment first!").open()
             return
         try:
             # TODO insert actual movers. At moment one mover because rendering need a minimum of one mover.
