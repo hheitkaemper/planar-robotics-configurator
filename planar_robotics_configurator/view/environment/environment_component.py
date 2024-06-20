@@ -1,3 +1,5 @@
+import numpy as np
+from gymnasium_planar_robotics.envs.basic_envs import BasicPlanarRoboticsEnv
 from kivymd.uix.floatlayout import MDFloatLayout
 
 from planar_robotics_configurator.model.configurator_model import ConfiguratorModel
@@ -6,6 +8,7 @@ from planar_robotics_configurator.view.environment.environment_map import Enviro
 from planar_robotics_configurator.view.environment.environment_selection import EnvironmentSelection
 from planar_robotics_configurator.view.environment.environment_side_bar import EnvironmentSideBar
 from planar_robotics_configurator.view.utils import Component
+from planar_robotics_configurator.view.utils.custom_snackbar import CustomSnackbar
 
 
 class EnvironmentComponent(MDFloatLayout, Component):
@@ -33,3 +36,22 @@ class EnvironmentComponent(MDFloatLayout, Component):
     def set_environment(self, environment: Environment):
         self.environment = environment
         self.map.set_environment(environment)
+
+    def show_preview(self):
+        if self.environment is None:
+            CustomSnackbar(text="Please select a environment first!").open()
+            return
+        try:
+            # TODO insert actual movers. At moment one mover because rendering need a minimum of one mover.
+            preview_env = BasicPlanarRoboticsEnv(
+                layout_tiles=self.environment.tiles,
+                num_movers=1,
+                table_height=self.environment.table_height,
+                initial_mover_start_xy_pos=np.array([[0.48, 0.48]]),
+                use_mj_passive_viewer=True)
+            preview_env.render()
+        except Exception as e:
+            if len(e.args) > 0:
+                CustomSnackbar(text=e.args[0]).open()
+            else:
+                CustomSnackbar(text="An exception occupied while trying to create a preview rendering!").open()
