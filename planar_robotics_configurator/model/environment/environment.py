@@ -13,7 +13,7 @@ class Environment:
     :param tile_width: width (cm) of the tiles in the environment in x direction.
     :param tile_length: length (cm) of the tiles in the environment in y direction.
     :param tile_height: height (cm) of the tiles in the environment in z direction.
-    :param tile_mass: mass (mg) of the tiles in the environment.
+    :param tile_mass: mass (kg) of the tiles in the environment.
     :param table_height: height (cm) of the table in the environment.
     :param std_noise: Standard deviation of the noise in the environment.
     """

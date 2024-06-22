@@ -32,7 +32,7 @@ class DialogContent(MDBoxLayout):
                                             required=True, input_filter="int")
         self.add_widget(self.env_length)
         self.table_height = NonEmptyTextField(text="40", hint_text="Table height", required=True,
-                                              helper_text="In kilograms", input_filter="float")
+                                              helper_text="In centimeters", input_filter="float")
         self.add_widget(self.table_height)
         self.std_noise = NonEmptyTextField(text="0.00001", hint_text="Std noise", required=True, input_filter="float")
         self.add_widget(self.std_noise)
