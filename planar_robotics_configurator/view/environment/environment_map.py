@@ -217,10 +217,20 @@ class EnvironmentMap(MDWidget):
         """
         Draws all the tiles in the environment.
         """
-        self.scatter.tiles_canvas.clear()
-        for x in range(0, self.environment.num_width):
-            for y in range(0, self.environment.num_length):
-                self.draw_tile(x, y)
+        self.scatter.tiles_canvas.children = []
+        with self.scatter.tiles_canvas:
+            Color(0.49, 0.49, 0.49, 1)
+            for index, value in np.ndenumerate(self.environment.tiles):
+                if value == 1:
+                    Rectangle(pos=self.tile_position_to_scatter(index[0] + 0.05, index[1] + 0.05),
+                              size=self.environment_to_scatter(self.environment.tile_width * 0.9,
+                                                               self.environment.tile_length * 0.9))
+            Color(0.2, 0.2, 0.2, 1)
+            for index, value in np.ndenumerate(self.environment.tiles):
+                if value == 0:
+                    Rectangle(pos=self.tile_position_to_scatter(index[0] + 0.05, index[1] + 0.05),
+                              size=self.environment_to_scatter(self.environment.tile_width * 0.9,
+                                                               self.environment.tile_length * 0.9))
 
     def tile_position_to_scatter(self, x, y) -> (int, int):
         """
