@@ -5,6 +5,7 @@ from kivymd.uix.menu import MDDropdownMenu
 
 from planar_robotics_configurator.model.configurator_model import ConfiguratorModel
 from planar_robotics_configurator.model.environment.environment import Environment
+from planar_robotics_configurator.view.environment.environment_settings_dialog import EnvironmentSettingsDialog
 from planar_robotics_configurator.view.utils import AdaptiveDropDownItem, CustomLabel, CustomIconButton
 
 
@@ -20,7 +21,8 @@ class EnvironmentSelection(MDAnchorLayout):
         self.anchor_x = "right"
         self.anchor_y = "top"
         self.padding = [dp(0), dp(10), dp(10), dp(0)]
-        create_button = CustomIconButton(icon="plus")
+        create_button = CustomIconButton(icon="plus",
+                                         on_release=lambda *x: EnvironmentSettingsDialog(self.env_component).open())
         self.dropdown_item = AdaptiveDropDownItem(adaptive_width=True)
         self.set_text("None")
         self.dropdown_item.on_release = self.open_menu
