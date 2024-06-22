@@ -22,8 +22,7 @@ class EnvironmentSelection(MDAnchorLayout):
         self.padding = [dp(0), dp(10), dp(10), dp(0)]
         create_button = CustomIconButton(icon="plus")
         self.dropdown_item = AdaptiveDropDownItem(adaptive_width=True)
-        self.dropdown_item.set_item(
-            ConfiguratorModel().environments[0].name if len(ConfiguratorModel().environments) > 0 else "None")
+        self.set_text("None")
         self.dropdown_item.on_release = self.open_menu
         self.dropdown_menu = MDDropdownMenu(position='bottom', caller=self.dropdown_item)
         self.add_widget(MDGridLayout(
@@ -41,7 +40,10 @@ class EnvironmentSelection(MDAnchorLayout):
             })
         self.dropdown_menu.open()
 
+    def set_text(self, text):
+        self.dropdown_item.set_item(text)
+
     def select_item(self, environment: Environment):
-        self.dropdown_item.set_item(environment.name)
+        self.set_text(environment.name)
         self.env_component.set_environment(environment)
         self.dropdown_menu.dismiss()

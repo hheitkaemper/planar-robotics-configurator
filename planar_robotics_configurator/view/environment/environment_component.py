@@ -22,7 +22,8 @@ class EnvironmentComponent(MDFloatLayout, Component):
         self.environment: Environment | None = None
         self.map = EnvironmentMap()
         self.add_widget(self.map)
-        self.add_widget(EnvironmentSelection(self))
+        self.selection: EnvironmentSelection = EnvironmentSelection(self)
+        self.add_widget(self.selection)
         self.add_widget(EnvironmentSideBar(self))
 
     def on_select(self, _):
@@ -36,6 +37,7 @@ class EnvironmentComponent(MDFloatLayout, Component):
     def set_environment(self, environment: Environment):
         self.environment = environment
         self.map.set_environment(environment)
+        self.selection.set_text(environment.name)
 
     def show_preview(self):
         if self.environment is None:
