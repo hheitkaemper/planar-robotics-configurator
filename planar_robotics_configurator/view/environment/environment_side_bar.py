@@ -17,7 +17,7 @@ class EnvironmentSideBar(MDGridLayout):
         self.spacing = [0, dp(5)]
         self.adaptive_size = True
         self.pos_hint = {"center_y": 0.5}
-        self.add_widget(CustomIconButton(icon="image-filter-center-focus-strong-outline",
+        self.add_widget(CustomIconButton(icon="crosshairs-gps",
                                          tooltip_text="Center map",
                                          on_release=lambda touch: self.env_component.map.center_map()))
         self.add_widget(CustomIconButton(icon="cog-outline",

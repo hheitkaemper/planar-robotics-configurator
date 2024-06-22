@@ -43,7 +43,7 @@ class DialogContent(MDBoxLayout):
         self.tiles_length = NonEmptyTextField(text="24", hint_text="Length", required=True,
                                               helper_text="In centimeters", input_filter="float")
         self.add_widget(self.tiles_length)
-        self.tiles_height = NonEmptyTextField(text="1.76", hint_text="Height", required=True,
+        self.tiles_height = NonEmptyTextField(text="6.7", hint_text="Height", required=True,
                                               helper_text="In centimeters", input_filter="float")
         self.add_widget(self.tiles_height)
         self.tiles_mass = NonEmptyTextField(text="5.6", hint_text="Mass", required=True,
@@ -72,6 +72,9 @@ class EnvironmentSettingsDialog(MDDialog):
                              ),
                              MDFlatButton(
                                  text="Confirm",
+                                 theme_text_color="Custom",
+                                 text_color=(0, 0, 0, 1),
+                                 md_bg_color=(1, 1, 1, 1),
                                  on_release=lambda *x: self.confirm()
                              )
                          ])
