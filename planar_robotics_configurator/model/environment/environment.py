@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 import numpy as np
 
+from planar_robotics_configurator.model.environment.mover import Mover
+
 
 @dataclass(frozen=False)
 class Environment:
@@ -16,6 +18,7 @@ class Environment:
     :param tile_mass: mass (kg) of the tiles in the environment.
     :param table_height: height (cm) of the table in the environment.
     :param std_noise: Standard deviation of the noise in the environment.
+    :param movers: List of movers in the environment.
     """
     name: str
     num_width: int
@@ -27,6 +30,7 @@ class Environment:
     tile_mass: float
     table_height: float
     std_noise: float
+    movers: list[Mover] = field(default_factory=list)
 
     def __post_init__(self):
         self.init_tiles()
@@ -58,6 +62,9 @@ class Environment:
                                           self.num_length - self.tiles.shape[1]), dtype=int)), axis=1)
 
     def set_size(self, num_width: int, num_length: int):
+        """
+        Sets the size of the environment and updates the tiles array.
+        """
         self.num_width = num_width
         self.num_length = num_length
         self.update_tiles()

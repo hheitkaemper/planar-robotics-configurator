@@ -1,4 +1,5 @@
 from planar_robotics_configurator.model.environment.environment import Environment
+from planar_robotics_configurator.model.environment.mover_preset import MoverPreset
 
 
 class ConfiguratorModel:
@@ -14,6 +15,7 @@ class ConfiguratorModel:
             return
         self.__class__.instance = self
         self.environments: list[Environment] = []
+        self.mover_presets: list[MoverPreset] = []
 
     def __new__(cls, *args, **kwargs):
         if not cls.instance:
