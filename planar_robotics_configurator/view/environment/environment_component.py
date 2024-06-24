@@ -43,21 +43,28 @@ class EnvironmentComponent(MDFloatLayout, Component):
             CustomSnackbar(text="Please select an environment first!").open()
             return
         try:
-            # TODO insert actual movers. At moment one mover because rendering need a minimum of one mover.
             preview_env = BasicPlanarRoboticsEnv(
                 layout_tiles=self.environment.tiles,
-                num_movers=1,
+                num_movers=len(self.environment.movers),
                 tile_params={
                     "mass": self.environment.tile_mass,
                     "size": np.array([
-                        self.environment.tile_width / 100,
-                        self.environment.tile_length / 100,
-                        self.environment.tile_height / 100
+                        self.environment.tile_width / 200,
+                        self.environment.tile_length / 200,
+                        self.environment.tile_height / 200
                     ])
+                },
+                mover_params={
+                    "size": np.array(list(map(lambda mover: [mover.preset.width / 200,
+                                                             mover.preset.length / 200,
+                                                             mover.preset.height / 200], self.environment.movers)))
                 },
                 table_height=self.environment.table_height / 100,
                 std_noise=self.environment.std_noise,
-                initial_mover_start_xy_pos=np.array([[0.48, 0.48]]),
+                initial_mover_start_xy_pos=np.array(list(
+                    map(lambda mover: [(mover.x + 0.5) * (self.environment.tile_width / 100),
+                                       (mover.y + 0.5) * (self.environment.tile_length / 100)],
+                        self.environment.movers))),
                 use_mj_passive_viewer=True)
             preview_env.render()
         except Exception as e:
