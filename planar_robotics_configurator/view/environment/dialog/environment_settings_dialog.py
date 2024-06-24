@@ -6,9 +6,8 @@ from kivymd.uix.dialog import MDDialog
 from kivymd.uix.scrollview import MDScrollView
 
 from planar_robotics_configurator.model.configurator_model import ConfiguratorModel
-from planar_robotics_configurator.model.environment.environment import Environment
-from planar_robotics_configurator.view.utils import CustomLabel, NonEmptyTextField
-from planar_robotics_configurator.view.utils.custom_snackbar import CustomSnackbar
+from planar_robotics_configurator.model.environment import Environment
+from planar_robotics_configurator.view.utils import CustomLabel, NonEmptyTextField, CustomSnackbar
 
 
 class DialogContent(MDBoxLayout):

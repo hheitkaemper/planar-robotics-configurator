@@ -4,7 +4,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 
-from planar_robotics_configurator.model.environment.mover import Mover
+from planar_robotics_configurator.model.environment import Mover
 from planar_robotics_configurator.view.utils import CustomLabel, NonEmptyTextField, CustomSnackbar
 
 

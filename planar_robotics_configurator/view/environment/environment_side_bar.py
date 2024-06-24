@@ -2,8 +2,7 @@ from kivy.metrics import dp
 from kivymd.uix.gridlayout import MDGridLayout
 
 from planar_robotics_configurator.view.environment.dialog import EnvironmentSettingsDialog, MoverPresetSelectionDialog
-from planar_robotics_configurator.view.utils import CustomIconButton, Divider
-from planar_robotics_configurator.view.utils.custom_snackbar import CustomSnackbar
+from planar_robotics_configurator.view.utils import CustomIconButton, Divider, CustomSnackbar
 
 
 class EnvironmentSideBar(MDGridLayout):

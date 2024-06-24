@@ -8,11 +8,9 @@ from kivy.input import MotionEvent
 from kivy.uix.scatter import Scatter
 from kivymd.uix.widget import MDWidget
 
-from planar_robotics_configurator.model.environment.environment import Environment
-from planar_robotics_configurator.model.environment.mover import Mover
-from planar_robotics_configurator.model.environment.mover_preset import MoverPreset
+from planar_robotics_configurator.model.environment import Environment, Mover, MoverPreset
 from planar_robotics_configurator.view.environment.dialog import MoverSettingsDialog
-from planar_robotics_configurator.view.utils.custom_snackbar import CustomSnackbar
+from planar_robotics_configurator.view.utils import CustomSnackbar
 
 
 class EnvironmentScatter(Scatter):

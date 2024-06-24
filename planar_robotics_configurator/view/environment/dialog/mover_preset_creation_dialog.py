@@ -6,7 +6,7 @@ from kivymd.uix.dialog import MDDialog
 from kivymd.uix.scrollview import MDScrollView
 
 from planar_robotics_configurator.model.configurator_model import ConfiguratorModel
-from planar_robotics_configurator.model.environment.mover_preset import MoverPreset
+from planar_robotics_configurator.model.environment import MoverPreset
 from planar_robotics_configurator.view.utils import NonEmptyTextField, CustomSnackbar
 
 

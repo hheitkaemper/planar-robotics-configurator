@@ -4,7 +4,7 @@ from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.menu import MDDropdownMenu
 
 from planar_robotics_configurator.model.configurator_model import ConfiguratorModel
-from planar_robotics_configurator.model.environment.environment import Environment
+from planar_robotics_configurator.model.environment import Environment
 from planar_robotics_configurator.view.environment.dialog import EnvironmentSettingsDialog
 from planar_robotics_configurator.view.utils import AdaptiveDropDownItem, CustomLabel, CustomIconButton
 
