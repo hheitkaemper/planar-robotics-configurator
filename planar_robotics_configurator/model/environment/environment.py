@@ -67,6 +67,7 @@ class Environment:
         """
         self.num_width = num_width
         self.num_length = num_length
+        self.movers[:] = [m for m in self.movers if m.x < num_width and m.y < num_length]
         self.update_tiles()
 
     def get_tile(self, x, y) -> bool:
