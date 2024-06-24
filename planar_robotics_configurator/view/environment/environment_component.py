@@ -32,7 +32,7 @@ class EnvironmentComponent(MDFloatLayout, Component):
         if len(ConfiguratorModel().environments) == 0:
             return
         self.environment = ConfiguratorModel().environments[0]
-        self.map.set_environment(self.environment)
+        self.set_environment(self.environment)
 
     def set_environment(self, environment: Environment):
         self.environment = environment

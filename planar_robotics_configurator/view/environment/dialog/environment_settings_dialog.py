@@ -62,7 +62,7 @@ class EnvironmentSettingsDialog(MDDialog):
         self.environment = environment
         scroll = MDScrollView(size_hint_y=None, height=Window.height / 2)
         self.dialog_content = DialogContent()
-        self.title = "Environment Settings"
+        self.title = "Environment creation" if environment is None else "Environment settings"
         super().__init__(type="custom",
                          content_cls=scroll,
                          buttons=[
@@ -71,7 +71,7 @@ class EnvironmentSettingsDialog(MDDialog):
                                  on_release=lambda *x: self.dismiss()
                              ),
                              MDFlatButton(
-                                 text="Confirm",
+                                 text="Edit" if environment is not None else "Add",
                                  theme_text_color="Custom",
                                  text_color=(0, 0, 0, 1),
                                  md_bg_color=(1, 1, 1, 1),
@@ -110,10 +110,10 @@ class EnvironmentSettingsDialog(MDDialog):
                 continue
             if not child.is_empty():
                 continue
-            CustomSnackbar(text="Please fill out all fields!").open()
+            CustomSnackbar(text="Please fill out all fields").open()
             return
         if not self.check_name():
-            CustomSnackbar(text="This name is already used!").open()
+            CustomSnackbar(text="This name is already used").open()
             return
         if self.environment is None:
             environment = self.create_environment()

@@ -22,6 +22,7 @@ class EnvironmentSelection(MDAnchorLayout):
         self.anchor_y = "top"
         self.padding = [dp(0), dp(10), dp(10), dp(0)]
         create_button = CustomIconButton(icon="plus",
+                                         tooltip_text="Create environment",
                                          on_release=lambda *x: EnvironmentSettingsDialog(self.env_component).open())
         self.dropdown_item = AdaptiveDropDownItem(adaptive_width=True)
         self.set_text("None")
