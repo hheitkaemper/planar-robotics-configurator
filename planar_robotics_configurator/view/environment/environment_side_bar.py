@@ -1,7 +1,7 @@
 from kivy.metrics import dp
 from kivymd.uix.gridlayout import MDGridLayout
 
-from planar_robotics_configurator.view.environment.environment_settings_dialog import EnvironmentSettingsDialog
+from planar_robotics_configurator.view.environment.dialog import EnvironmentSettingsDialog, MoverPresetSelectionDialog
 from planar_robotics_configurator.view.utils import CustomIconButton, Divider
 from planar_robotics_configurator.view.utils.custom_snackbar import CustomSnackbar
 
@@ -17,6 +17,10 @@ class EnvironmentSideBar(MDGridLayout):
         self.spacing = [0, dp(5)]
         self.adaptive_size = True
         self.pos_hint = {"center_y": 0.5}
+        self.add_widget(CustomIconButton(icon="alpha-m-box",
+                                         tooltip_text="Draw mover",
+                                         on_release=lambda touch: MoverPresetSelectionDialog(env_component.map).open()))
+        self.add_widget(Divider(orientation="horizontal", width=dp(2), md_bg_color=(1, 1, 1, 1)))
         self.add_widget(CustomIconButton(icon="crosshairs-gps",
                                          tooltip_text="Center map",
                                          on_release=lambda touch: self.env_component.map.center_map()))
