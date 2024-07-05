@@ -5,6 +5,8 @@ from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.scrollview import MDScrollView
 
+from planar_robotics_configurator.view.utils import NonEmptyTextField
+
 
 class ScrollDialog(MDDialog):
 
@@ -43,3 +45,12 @@ class ScrollDialog(MDDialog):
 
     def get_scroll_children(self):
         return self.dialog_content.children
+
+    def check_fields(self) -> bool:
+        for child in self.get_scroll_children():
+            if not isinstance(child, NonEmptyTextField):
+                continue
+            if not child.is_empty():
+                continue
+            return False
+        return True

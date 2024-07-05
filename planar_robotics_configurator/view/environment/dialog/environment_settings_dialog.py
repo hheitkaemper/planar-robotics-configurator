@@ -11,7 +11,6 @@ class EnvironmentSettingsDialog(ScrollDialog):
     def __init__(self, env_component, environment: Environment = None):
         self.env_component = env_component
         self.environment = environment
-        self.title = "Environment creation" if environment is None else "Environment settings"
 
         self.env_name = NonEmptyTextField(hint_text="Configuration name", required=True)
         self.env_width = NonEmptyTextField(text="10", hint_text="Width", helper_text="Number of tiles", required=True,
@@ -30,7 +29,8 @@ class EnvironmentSettingsDialog(ScrollDialog):
         self.tiles_mass = NonEmptyTextField(text="5.6", hint_text="Mass", required=True, helper_text="In kilograms",
                                             input_filter="float")
 
-        super().__init__("Cancel", "Edit" if environment is not None else "Add")
+        super().__init__("Environment creation" if environment is None else "Environment settings",
+                         confirm_text="Edit" if environment is not None else "Add")
         if self.environment is not None:
             self.load_environment()
 
@@ -70,11 +70,7 @@ class EnvironmentSettingsDialog(ScrollDialog):
         Checks if name is already used.
         Creates or updates environment and sets ths environment as current.
         """
-        for child in self.get_scroll_children():
-            if not isinstance(child, NonEmptyTextField):
-                continue
-            if not child.is_empty():
-                continue
+        if not self.check_fields():
             CustomSnackbar(text="Please fill out all fields").open()
             return
         if not self.check_name():
