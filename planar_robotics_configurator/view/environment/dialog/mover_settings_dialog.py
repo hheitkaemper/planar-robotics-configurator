@@ -1,11 +1,10 @@
 from kivy.metrics import dp
-from kivy.uix.checkbox import CheckBox
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 
 from planar_robotics_configurator.model.environment import Mover
-from planar_robotics_configurator.view.utils import CustomLabel, NonEmptyTextField, CustomSnackbar
+from planar_robotics_configurator.view.utils import CustomLabel, NonEmptyTextField, CustomSnackbar, CustomCheckbox
 
 
 class DialogContent(MDBoxLayout):
@@ -22,8 +21,9 @@ class DialogContent(MDBoxLayout):
 
         self.add_widget(CustomLabel(text="Circle", pos_hint={"center_y": 0.5}))
         self.circle_layout = MDBoxLayout(orientation="horizontal", adaptive_height=True, spacing=dp(20))
-        self.circle_checkbox = CheckBox(size_hint=(None, None), width=dp(20), height=dp(20), pos_hint={"center_y": 0.5})
-        self.circle_checkbox.bind(active=self.on_circle_check)
+        self.circle_checkbox = CustomCheckbox(size_hint=(None, None), width=dp(20), height=dp(20),
+                                              pos_hint={"center_y": 0.5})
+        self.circle_checkbox.bind(active=self.on_check)
         self.circle_layout.add_widget(self.circle_checkbox)
         self.radius_field = NonEmptyTextField(text="0", hint_text="Radius", helper_text="In centimeters",
                                               input_filter="float", pos_hint={"center_y": 0.5})
@@ -32,8 +32,9 @@ class DialogContent(MDBoxLayout):
 
         self.add_widget(CustomLabel(text="Box", pos_hint={"center_y": 0.5}))
         self.box_layout = MDBoxLayout(orientation="horizontal", adaptive_height=True, spacing=dp(20))
-        self.box_checkbox = CheckBox(size_hint=(None, None), width=dp(20), height=dp(20), pos_hint={"center_y": 0.5})
-        self.box_checkbox.bind(active=self.on_box_check)
+        self.box_checkbox = CustomCheckbox(size_hint=(None, None), width=dp(20), height=dp(20),
+                                           pos_hint={"center_y": 0.5})
+        self.box_checkbox.bind(active=self.on_check)
         self.box_layout.add_widget(self.box_checkbox)
         self.width_field = NonEmptyTextField(text="0", hint_text="Width", helper_text="In centimeters",
                                              input_filter="float", pos_hint={"center_y": 0.5})
@@ -43,19 +44,21 @@ class DialogContent(MDBoxLayout):
         self.box_layout.add_widget(self.length_field)
         self.add_widget(self.box_layout)
 
-    def on_circle_check(self, checkbox, value):
+    def on_check(self, checkbox, value):
         """
-        Sets the box checkbox to inactive.
+        Sets the other checkbox to inactive.
         """
-        if value:
-            self.box_checkbox.active = False
-
-    def on_box_check(self, checkbox, value):
-        """
-        Sets the circle checkbox to inactive.
-        """
-        if value:
-            self.circle_checkbox.active = False
+        if not value:
+            return
+        for layout in self.children:
+            if not isinstance(layout, MDBoxLayout):
+                continue
+            for c in layout.children:
+                if not isinstance(c, CustomCheckbox):
+                    continue
+                if c == checkbox:
+                    continue
+                c.active = False
 
 
 class MoverSettingsDialog(MDDialog):

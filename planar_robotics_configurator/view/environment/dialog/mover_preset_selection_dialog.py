@@ -1,11 +1,10 @@
 from kivy.metrics import dp
-from kivy.uix.checkbox import CheckBox
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
 
 from planar_robotics_configurator.model.configurator_model import ConfiguratorModel
 from planar_robotics_configurator.view.environment.dialog import MoverPresetCreationDialog
-from planar_robotics_configurator.view.utils import CustomLabel, Divider, CustomSnackbar, ScrollDialog
+from planar_robotics_configurator.view.utils import CustomLabel, Divider, CustomSnackbar, ScrollDialog, CustomCheckbox
 
 
 class MoverPresetSelectionDialog(ScrollDialog):
@@ -83,7 +82,7 @@ class MoverPresetSelectionDialog(ScrollDialog):
                 c.active = False
 
 
-class CheckBoxWithPreset(CheckBox):
+class CheckBoxWithPreset(CustomCheckbox):
     """
     A CheckBox in which a mover preset can be stored.
     """

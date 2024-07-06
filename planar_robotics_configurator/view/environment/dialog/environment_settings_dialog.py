@@ -35,7 +35,6 @@ class EnvironmentSettingsDialog(ScrollDialog):
             self.load_environment()
 
     def add_dialog_content(self):
-        print("add dialog called")
         self.add_scroll_widget(self.env_name)
         self.add_scroll_widget(CustomLabel(text="Environment"))
         self.add_scroll_widget(self.env_width)
