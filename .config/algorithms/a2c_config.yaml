@@ -1,0 +1,39 @@
+algo1:
+  name: A2C
+  parameters:
+    - name: policy
+      description: The policy model to use
+      parameter_type: SelectionParameter
+      possible_values: [ "MlpPolicy", "CnnPolicy", "MultiInputPolicy" ]
+      type: ''
+      default: ''
+    - name: learning_rate
+      description: The learning rate, it can be a function of the current progress remaining (from 1 to 0)
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'float'
+      default: '0'
+    - name: n_steps
+      description: The number of steps to run for each environment per update (i.e. batch size is n_steps * n_env where n_env is number of environment copies running in parallel)
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'int'
+      default: ''
+    - name: gamma
+      description: Discount factor
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'float'
+      default: ''
+    - name: gae_lambda
+      description: Factor for trade-off of bias vs variance for Generalized Advantage Estimator. Equivalent to classic advantage when set to 1.
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'float'
+      default: '1'
+    - name: ent_coef
+      description: Entropy coefficient for the loss calculation
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'float'
+      default: ''
