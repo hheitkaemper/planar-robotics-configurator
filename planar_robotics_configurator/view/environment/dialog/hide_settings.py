@@ -27,6 +27,9 @@ class HideSettings(ScrollDialog):
         self.show_working_stations = env_map.hiding_settings["working_stations"]
         self.add_option("Show Working Stations", self.show_working_stations,
                         lambda instance: self.__setattr__("show_working_stations", instance.active))
+        self.show_objects = env_map.hiding_settings["objects"]
+        self.add_option("Show Objects", self.show_objects,
+                        lambda instance: self.__setattr__("show_objects", instance.active))
 
     def on_confirm(self):
         self.env_map.hiding_settings["environment_background"] = self.show_env_background
@@ -34,6 +37,7 @@ class HideSettings(ScrollDialog):
         self.env_map.hiding_settings["movers"] = self.show_movers
         self.env_map.hiding_settings["movers_collision"] = self.show_movers_collision
         self.env_map.hiding_settings["working_stations"] = self.show_working_stations
+        self.env_map.hiding_settings["objects"] = self.show_objects
         self.env_map.redraw()
         self.dismiss()
 

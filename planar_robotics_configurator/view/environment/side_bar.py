@@ -26,6 +26,9 @@ class EnvironmentSideBar(MDGridLayout):
         self.add_widget(CustomIconButton(icon="robot-industrial",
                                          tooltip_text="Draw robot",
                                          on_release=lambda touch: self.env_component.map.set_working_station_mode()))
+        self.add_widget(CustomIconButton(icon="cube-outline",
+                                         tooltip_text="Draw object",
+                                         on_release=lambda touch: self.env_component.map.set_object_mode()))
         self.add_widget(Divider(orientation="horizontal", width=dp(2), md_bg_color=(1, 1, 1, 1)))
         self.add_widget(CustomIconButton(icon="crosshairs-gps",
                                          tooltip_text="Center map",

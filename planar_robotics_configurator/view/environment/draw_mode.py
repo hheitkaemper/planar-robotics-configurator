@@ -17,3 +17,7 @@ class MoverMode(DrawMode):
 
 class WorkingStationMode(DrawMode):
     pass
+
+
+class ObjectMode(DrawMode):
+    pass

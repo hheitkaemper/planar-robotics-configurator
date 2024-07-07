@@ -157,6 +157,6 @@ class WorkingStationSettings(MDDialog):
     def cancel(self):
         if self.working_station is not None:
             self.env_map.remove_working_station(self.working_station)
-            self.env_map.remove_hover_robot()
+            self.env_map.remove_texture_hover_rect()
             self.env_map.environment.working_stations.remove(self.working_station)
         self.dismiss()
