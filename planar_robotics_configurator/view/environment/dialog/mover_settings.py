@@ -119,6 +119,7 @@ class MoverSettingsDialog(MDDialog):
             mover = Mover(self.preset, self.mover_x, self.mover_y, [])
         else:
             mover = self.mover
+            self.env_map.remove_mover(mover)
         if self.dialog_content.circle_checkbox.active:
             if self.dialog_content.radius_field.is_empty():
                 CustomSnackbar(text="Please insert a radius").open()
@@ -134,8 +135,8 @@ class MoverSettingsDialog(MDDialog):
             mover.collision_shape = []
         if self.mover is None:
             self.env_map.environment.movers.append(mover)
-            self.env_map.draw_mover(mover)
-            self.env_map.remove_hover_rect()
+        self.env_map.draw_mover(mover)
+        self.env_map.remove_hover_rect()
         self.dismiss()
 
     def cancel(self):

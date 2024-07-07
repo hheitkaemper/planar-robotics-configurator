@@ -1,7 +1,7 @@
 import numpy as np
 from kivy.core.image import Image
 from kivy.core.window import Window
-from kivy.graphics import Color, Rectangle
+from kivy.graphics import Color, Rectangle, Line
 from kivy.graphics.context_instructions import Scale
 from kivy.graphics.instructions import Canvas
 from kivy.graphics.texture import Texture
@@ -60,6 +60,16 @@ class HoverRectangle(Rectangle):
         self.y = y
 
 
+class CollisionLine(Line):
+    """
+    Represents a line for which it is possible to store the mover.
+    """
+
+    def __init__(self, mover, **kwargs):
+        super(CollisionLine, self).__init__(**kwargs)
+        self.mover = mover
+
+
 class EnvironmentMap(MDWidget):
     """
     Defines a map which can be moved by middle and right click and zoomed with scroll-wheel.
@@ -78,7 +88,8 @@ class EnvironmentMap(MDWidget):
         self.hiding_settings = {
             "environment_background": True,
             "tiles": True,
-            "movers": False,
+            "movers": True,
+            "movers_collision": False,
             "working_stations": True
         }
         # Kivy coordinate system to environment coordinate system
@@ -88,6 +99,7 @@ class EnvironmentMap(MDWidget):
             self.scatter.tiles_background_canvas = Canvas()
             self.scatter.tiles_canvas = Canvas()
             self.scatter.movers_canvas = Canvas()
+            self.scatter.movers_collision_canvas = Canvas()
             self.scatter.hover_rect_color = Color(0, 0, 0, 0)
             self.scatter.hover_rect = HoverRectangle(-1, -1, pos=(0, 0), size=(1, 1))
             self.scatter.working_stations_canvas = Canvas()
@@ -404,24 +416,45 @@ class EnvironmentMap(MDWidget):
             [c for c in self.scatter.movers_canvas.children
              if not (isinstance(c, Rectangle) and (self.is_close(c.pos, pos) or self.is_close(c.pos, pos_2)))]
 
+        self.scatter.movers_collision_canvas.children[:] = \
+            [c for c in self.scatter.movers_collision_canvas.children
+             if not (isinstance(c, CollisionLine) and c.mover == mover)]
+
     def draw_mover(self, mover: Mover) -> None:
         """
         Draws a mover.
         :params mover: Mover object which provides the position and size of the mover.
         """
-        if not self.hiding_settings["movers"]:
-            return
-        with self.scatter.movers_canvas:
-            Color(0.85, 0.85, 0.85, 1)
-            x_pad = (1 - (mover.preset.width / self.environment.tile_width)) / 2
-            y_pad = (1 - (mover.preset.length / self.environment.tile_length)) / 2
-            Rectangle(pos=self.tile_position_to_scatter(mover.x + x_pad, mover.y + y_pad),
-                      size=self.environment_to_scatter(mover.preset.width, mover.preset.length))
-            Color(0.98, 1, 0.87, 1)
-            x_pad = (1 - (mover.preset.width * 0.9 / self.environment.tile_width)) / 2
-            y_pad = (1 - (mover.preset.length * 0.9 / self.environment.tile_length)) / 2
-            Rectangle(pos=self.tile_position_to_scatter(mover.x + x_pad, mover.y + y_pad),
-                      size=self.environment_to_scatter(mover.preset.width * 0.9, mover.preset.length * 0.9))
+        if self.hiding_settings["movers"]:
+            with self.scatter.movers_canvas:
+                Color(0.85, 0.85, 0.85, 1)
+                x_pad = (1 - (mover.preset.width / self.environment.tile_width)) / 2
+                y_pad = (1 - (mover.preset.length / self.environment.tile_length)) / 2
+                Rectangle(pos=self.tile_position_to_scatter(mover.x + x_pad, mover.y + y_pad),
+                          size=self.environment_to_scatter(mover.preset.width, mover.preset.length))
+                Color(0.98, 1, 0.87, 1)
+                x_pad = (1 - (mover.preset.width * 0.9 / self.environment.tile_width)) / 2
+                y_pad = (1 - (mover.preset.length * 0.9 / self.environment.tile_length)) / 2
+                Rectangle(pos=self.tile_position_to_scatter(mover.x + x_pad, mover.y + y_pad),
+                          size=self.environment_to_scatter(mover.preset.width * 0.9, mover.preset.length * 0.9))
+        if self.hiding_settings["movers_collision"]:
+            with self.scatter.movers_collision_canvas:
+                center_pos = self.tile_position_to_environment(mover.x + 0.5, mover.y + 0.5)
+                match len(mover.collision_shape):
+                    case 0:
+                        pass
+                    case 1:
+                        pos = self.environment_to_scatter(center_pos[0] - mover.collision_shape[0],
+                                                          center_pos[1] - mover.collision_shape[0])
+                        size = self.environment_to_scatter(mover.collision_shape[0] * 2, mover.collision_shape[0] * 2)
+                        Color(1, 0, 0, 1)
+                        CollisionLine(mover, ellipse=(pos[0], pos[1], size[0], size[1]))
+                    case 2:
+                        pos = self.environment_to_scatter(center_pos[0] - mover.collision_shape[0] / 2,
+                                                          center_pos[1] - mover.collision_shape[1] / 2)
+                        size = self.environment_to_scatter(mover.collision_shape[0], mover.collision_shape[1])
+                        Color(1, 0, 0, 1)
+                        CollisionLine(mover, rectangle=(pos[0], pos[1], size[0], size[1]))
 
     def draw_working_station(self, working_station: WorkingStation) -> None:
         """
