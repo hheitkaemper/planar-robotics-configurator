@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from planar_robotics_configurator.model.environment.mover import Mover
+from planar_robotics_configurator.model.environment.object import Object
 from planar_robotics_configurator.model.environment.working_station import WorkingStation
 
 
@@ -20,6 +21,8 @@ class Environment:
     :param table_height: height (cm) of the table in the environment.
     :param std_noise: Standard deviation of the noise in the environment.
     :param movers: List of movers in the environment.
+    :param working_stations: List of working stations in the environment.
+    :param objects: List of objects in the environment.
     """
     name: str
     num_width: int
@@ -33,6 +36,7 @@ class Environment:
     std_noise: float
     movers: list[Mover] = field(default_factory=list)
     working_stations: list[WorkingStation] = field(default_factory=list)
+    objects: list[Object] = field(default_factory=list)
 
     def __post_init__(self):
         self.init_tiles()
