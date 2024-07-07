@@ -43,6 +43,12 @@ class EnvironmentComponent(MDFloatLayout, Component):
             CustomSnackbar(text="Please select an environment first!").open()
             return
         try:
+            mp_xml_str = ""
+            for working_station in self.environment.working_stations:
+                mp_xml_str = f'\n\t<include file="{working_station.fileRef}"/>'
+            custom_model_xml_strings = {
+                "custom_outworldbody_xml_str": mp_xml_str
+            }
             preview_env = BasicPlanarRoboticsEnv(
                 layout_tiles=self.environment.tiles,
                 num_movers=len(self.environment.movers),
@@ -65,6 +71,7 @@ class EnvironmentComponent(MDFloatLayout, Component):
                     map(lambda mover: [(mover.x + 0.5) * (self.environment.tile_width / 100),
                                        (mover.y + 0.5) * (self.environment.tile_length / 100)],
                         self.environment.movers))),
+                custom_model_xml_strings=custom_model_xml_strings,
                 use_mj_passive_viewer=True)
             preview_env.render()
         except Exception as e:

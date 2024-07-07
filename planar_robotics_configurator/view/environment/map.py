@@ -1,15 +1,18 @@
 import numpy as np
+from kivy.core.image import Image
 from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle
 from kivy.graphics.context_instructions import Scale
 from kivy.graphics.instructions import Canvas
+from kivy.graphics.texture import Texture
 from kivy.graphics.transformation import Matrix
 from kivy.input import MotionEvent
 from kivy.uix.scatter import Scatter
 from kivymd.uix.widget import MDWidget
 
-from planar_robotics_configurator.model.environment import Environment, Mover, MoverPreset
-from planar_robotics_configurator.view.environment.dialog import MoverSettingsDialog
+from planar_robotics_configurator.model.environment import Environment, Mover
+from planar_robotics_configurator.model.environment.working_station import WorkingStation
+from planar_robotics_configurator.view.environment.dialog import MoverSettingsDialog, WorkingStationSettings
 from planar_robotics_configurator.view.utils import CustomSnackbar
 from planar_robotics_configurator.view.environment.draw_mode import DrawMode, TilesMode, MoverMode, WorkingStationMode
 
@@ -70,6 +73,8 @@ class EnvironmentMap(MDWidget):
         self.draw_mode: DrawMode = TilesMode()
         self.scatter: EnvironmentScatter = EnvironmentScatter()
         self.environment: Environment | None = None
+        self.robot_texture: Texture = Image("assets/robot.png").texture
+        self.robot_texture.flip_vertical()
         # Kivy coordinate system to environment coordinate system
         with self.scatter.canvas.before:
             Scale(1, -1, 1)
@@ -79,6 +84,9 @@ class EnvironmentMap(MDWidget):
             self.scatter.movers_canvas = Canvas()
             self.scatter.hover_rect_color = Color(0, 0, 0, 0)
             self.scatter.hover_rect = HoverRectangle(-1, -1, pos=(0, 0), size=(1, 1))
+            self.scatter.working_stations_canvas = Canvas()
+            self.scatter.robot_hover_color = Color(0, 0, 0, 0)
+            self.scatter.robot_hover = Rectangle(texture=self.robot_texture, pos=(0, 0), size=(0, 0))
         self.add_widget(self.scatter)
 
     def on_touch_down(self, touch: MotionEvent):
@@ -91,6 +99,18 @@ class EnvironmentMap(MDWidget):
             self.scale_at(-1, *touch.pos)
             return True
         if "button" in touch.profile and touch.button == "left" and self.environment is not None:
+
+            if isinstance(self.draw_mode, WorkingStationMode):
+                pos = self.screen_to_environment(*touch.pos)
+                working_station = next(filter(
+                    lambda w: self.is_close(pos, (w.position[0], w.position[1]), tolerance=10),
+                    self.environment.working_stations), None)
+                if working_station is not None:
+                    WorkingStationSettings(self, working_station=working_station).open()
+                    return True
+                WorkingStationSettings(self, x=round(pos[0], 2), y=round(pos[1], 2)).open()
+                return True
+
             pos = self.screen_to_tile_position(*touch.pos)
             if 0 <= pos[0] < self.environment.num_width and 0 <= pos[1] < self.environment.num_length:
                 # Edit mover if there is a mover.
@@ -121,6 +141,12 @@ class EnvironmentMap(MDWidget):
         """
         if self.environment is None:
             return
+        if isinstance(self.draw_mode, WorkingStationMode):
+            self.draw_hover_robot(*self.screen_to_environment(*pos))
+            return
+        else:
+            self.remove_hover_robot()
+
         pos = self.screen_to_tile_position(*pos)
         if 0 <= pos[0] < self.environment.num_width and 0 <= pos[1] < self.environment.num_length:
             self.draw_hover_tile(*pos)
@@ -135,6 +161,30 @@ class EnvironmentMap(MDWidget):
         self.scatter.hover_rect_color.a = 0
         self.scatter.hover_rect.x = -1
         self.scatter.hover_rect.y = -1
+
+    def remove_hover_robot(self):
+        """
+        Hide the hover robot to the user. Removes the color.
+        """
+        self.scatter.robot_hover_color.a = 0
+
+    def draw_hover_robot(self, x, y):
+        """
+        Draws a hover robot at position (x, y) in environment position.
+        :param x: x position in environment coordinate system.
+        :param y: y position in environment coordinate system.
+        """
+        working_station = next(filter(lambda w: self.is_close((x, y), (w.position[0], w.position[1]),
+                                                              tolerance=10), self.environment.working_stations), None)
+        if working_station is not None:
+            self.scatter.robot_hover_color.rgba = (0, 0, 0, 0.6)
+            self.scatter.robot_hover.pos = self.environment_to_scatter(working_station.position[0] - 10,
+                                                                       working_station.position[1] - 10)
+            self.scatter.robot_hover.size = self.environment_to_scatter(20, 20)
+            return
+        self.scatter.robot_hover_color.rgba = (1, 1, 1, 1)
+        self.scatter.robot_hover.pos = self.environment_to_scatter(x - 10, y - 10)
+        self.scatter.robot_hover.size = self.environment_to_scatter(20, 20)
 
     def draw_hover_tile(self, x, y):
         """
@@ -202,6 +252,7 @@ class EnvironmentMap(MDWidget):
         self.draw_tiles_background()
         self.draw_tiles()
         self.draw_movers()
+        self.draw_working_stations()
 
     def center_map(self):
         """
@@ -277,6 +328,7 @@ class EnvironmentMap(MDWidget):
         Sets the place mode to movers. Mark editable or addable movers on hover and allow to place mover on tiles.
         """
         self.remove_hover_rect()
+        self.remove_hover_robot()
         self.draw_mode = MoverMode(preset)
 
     def set_tiles_mode(self):
@@ -302,6 +354,14 @@ class EnvironmentMap(MDWidget):
         self.scatter.movers_canvas.clear()
         for mover in self.environment.movers:
             self.draw_mover(mover)
+
+    def draw_working_stations(self) -> None:
+        """
+        Removes all drawn working stations and redraw all working stations in the current environment.
+        """
+        self.scatter.working_stations_canvas.clear()
+        for working_station in self.environment.working_stations:
+            self.draw_working_station(working_station)
 
     @staticmethod
     def is_close(pos_1, pos_2, tolerance=0.01) -> bool:
@@ -341,6 +401,29 @@ class EnvironmentMap(MDWidget):
             y_pad = (1 - (mover.preset.length * 0.9 / self.environment.tile_length)) / 2
             Rectangle(pos=self.tile_position_to_scatter(mover.x + x_pad, mover.y + y_pad),
                       size=self.environment_to_scatter(mover.preset.width * 0.9, mover.preset.length * 0.9))
+
+    def draw_working_station(self, working_station: WorkingStation) -> None:
+        """
+        Draws a working station.
+        :params working_station: WorkingStation object which should be drawn.
+        """
+        with self.scatter.working_stations_canvas:
+            Color(working_station.color[0], working_station.color[1], working_station.color[2],
+                  working_station.color[3])
+            Rectangle(
+                texture=self.robot_texture,
+                pos=self.environment_to_scatter(working_station.position[0] - 10, working_station.position[1] - 10),
+                size=self.environment_to_scatter(20, 20))
+
+    def remove_working_station(self, working_station: WorkingStation) -> None:
+        """
+        Removes a specific working station from the map.
+        :params working_station: WorkingStation which should be removed.
+        """
+        pos = self.environment_to_scatter(working_station.position[0] - 10, working_station.position[1] - 10)
+        self.scatter.working_stations_canvas.children[:] = \
+            [c for c in self.scatter.working_stations_canvas.children
+             if not (isinstance(c, Rectangle) and (self.is_close(c.pos, pos)))]
 
     def tile_position_to_scatter(self, x, y) -> (int, int):
         """
