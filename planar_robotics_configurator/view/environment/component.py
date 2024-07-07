@@ -4,9 +4,9 @@ from kivymd.uix.floatlayout import MDFloatLayout
 
 from planar_robotics_configurator.model.configurator_model import ConfiguratorModel
 from planar_robotics_configurator.model.environment import Environment
-from planar_robotics_configurator.view.environment.environment_map import EnvironmentMap
-from planar_robotics_configurator.view.environment.environment_selection import EnvironmentSelection
-from planar_robotics_configurator.view.environment.environment_side_bar import EnvironmentSideBar
+from planar_robotics_configurator.view.environment.map import EnvironmentMap
+from planar_robotics_configurator.view.environment.selection import EnvironmentSelection
+from planar_robotics_configurator.view.environment.side_bar import EnvironmentSideBar
 from planar_robotics_configurator.view.utils import Component, CustomSnackbar
 
 

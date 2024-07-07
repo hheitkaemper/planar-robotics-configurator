@@ -11,6 +11,7 @@ from kivymd.uix.widget import MDWidget
 from planar_robotics_configurator.model.environment import Environment, Mover, MoverPreset
 from planar_robotics_configurator.view.environment.dialog import MoverSettingsDialog
 from planar_robotics_configurator.view.utils import CustomSnackbar
+from planar_robotics_configurator.view.environment.draw_mode import DrawMode, TilesMode, MoverMode, WorkingStationMode
 
 
 class EnvironmentScatter(Scatter):
@@ -66,8 +67,7 @@ class EnvironmentMap(MDWidget):
     def __init__(self):
         super().__init__()
         Window.bind(mouse_pos=self.on_mouse_over)
-        self.draw_mode: str = "tiles"
-        self.selected_mover_preset: MoverPreset | None = None
+        self.draw_mode: DrawMode = TilesMode()
         self.scatter: EnvironmentScatter = EnvironmentScatter()
         self.environment: Environment | None = None
         # Kivy coordinate system to environment coordinate system
@@ -96,20 +96,20 @@ class EnvironmentMap(MDWidget):
                 # Edit mover if there is a mover.
                 mover = next(filter((lambda m: m.x == pos[0] and m.y == pos[1]), self.environment.movers), None)
                 if mover is not None:
-                    MoverSettingsDialog(self, pos[0], pos[1], self.selected_mover_preset, mover).open()
+                    MoverSettingsDialog(self, pos[0], pos[1], None, mover).open()
                     return True
                 # Place/remove tile if the draw_mode is tiles.
-                if self.draw_mode == "tiles":
+                if isinstance(self.draw_mode, TilesMode):
                     self.environment.set_tile(*pos, 1 - self.environment.get_tile(*pos))
                     self.remove_hover_rect()
                     self.redraw_tile(*pos)
                     return True
                 # Place a mover if the position is on a tile.
-                if self.draw_mode == "mover":
+                if isinstance(self.draw_mode, MoverMode):
                     if self.environment.get_tile(*pos) == 0:
                         CustomSnackbar("Movers can only be placed on a tile").open()
                         return True
-                    MoverSettingsDialog(self, pos[0], pos[1], self.selected_mover_preset).open()
+                    MoverSettingsDialog(self, pos[0], pos[1], self.draw_mode.preset).open()
                     return True
 
         return super().on_touch_down(touch)
@@ -122,10 +122,11 @@ class EnvironmentMap(MDWidget):
         if self.environment is None:
             return
         pos = self.screen_to_tile_position(*pos)
-        if not (0 <= pos[0] < self.environment.num_width and 0 <= pos[1] < self.environment.num_length):
-            self.remove_hover_rect()
+        if 0 <= pos[0] < self.environment.num_width and 0 <= pos[1] < self.environment.num_length:
+            self.draw_hover_tile(*pos)
             return
-        self.draw_hover_tile(*pos)
+        else:
+            self.remove_hover_rect()
 
     def remove_hover_rect(self):
         """
@@ -154,7 +155,7 @@ class EnvironmentMap(MDWidget):
             self.scatter.hover_rect.pos = self.tile_position_to_scatter(mover.x + x_pad, mover.y + y_pad)
             self.scatter.hover_rect.size = self.environment_to_scatter(mover.preset.width, mover.preset.length)
             return
-        if self.draw_mode == "tiles":
+        if isinstance(self.draw_mode, TilesMode):
             if self.environment.get_tile(x, y) == 1:
                 # Red
                 self.scatter.hover_rect_color.rgba = (1, 0.45, 0.45, 1)
@@ -165,16 +166,16 @@ class EnvironmentMap(MDWidget):
             self.scatter.hover_rect.size = self.environment_to_scatter(self.environment.tile_width * 0.9,
                                                                        self.environment.tile_length * 0.9)
             return
-        if self.draw_mode == "mover":
+        if isinstance(self.draw_mode, MoverMode):
             if self.environment.get_tile(x, y) == 0:
                 self.remove_hover_rect()
                 return
             self.scatter.hover_rect_color.rgba = (0.65, 1, 0.56, 1)
-            x_pad = (1 - (self.selected_mover_preset.width / self.environment.tile_width)) / 2
-            y_pad = (1 - (self.selected_mover_preset.length / self.environment.tile_length)) / 2
+            preset = self.draw_mode.preset
+            x_pad = (1 - (preset.width / self.environment.tile_width)) / 2
+            y_pad = (1 - (preset.length / self.environment.tile_length)) / 2
             self.scatter.hover_rect.pos = self.tile_position_to_scatter(x + x_pad, y + y_pad)
-            self.scatter.hover_rect.size = self.environment_to_scatter(self.selected_mover_preset.width,
-                                                                       self.selected_mover_preset.length)
+            self.scatter.hover_rect.size = self.environment_to_scatter(preset.width, preset.length)
 
     def scale_at(self, scale: float, x: float, y: float) -> None:
         """
@@ -276,16 +277,23 @@ class EnvironmentMap(MDWidget):
         Sets the place mode to movers. Mark editable or addable movers on hover and allow to place mover on tiles.
         """
         self.remove_hover_rect()
-        self.draw_mode = "mover"
-        self.selected_mover_preset = preset
+        self.draw_mode = MoverMode(preset)
 
     def set_tiles_mode(self):
         """
         Sets the place mode to tiles. Only in this mode the hovered tiles are displayed and editable.
         """
         self.remove_hover_rect()
-        self.draw_mode = "tiles"
-        self.selected_mover_preset = None
+        self.remove_hover_robot()
+        self.draw_mode = TilesMode()
+
+    def set_working_station_mode(self):
+        """
+        Sets the place mode to tiles. Only in this mode the hovered tiles are displayed and editable.
+        """
+        self.remove_hover_rect()
+        self.remove_hover_robot()
+        self.draw_mode = WorkingStationMode()
 
     def draw_movers(self) -> None:
         """

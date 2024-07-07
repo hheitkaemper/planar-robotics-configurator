@@ -4,6 +4,7 @@ from kivymd.uix.button import MDFlatButton
 
 from planar_robotics_configurator.model.configurator_model import ConfiguratorModel
 from planar_robotics_configurator.view.environment.dialog import MoverPresetCreationDialog
+from planar_robotics_configurator.view.environment.draw_mode import MoverMode
 from planar_robotics_configurator.view.utils import CustomLabel, Divider, CustomSnackbar, ScrollDialog, CustomCheckbox
 
 
@@ -14,8 +15,8 @@ class MoverPresetSelectionDialog(ScrollDialog):
 
     def __init__(self, env_map):
         self.env_map = env_map
-        self.preset = env_map.selected_mover_preset
-        super().__init__("Mover-preset selection", "Tiles mode", "Select")
+        self.preset = env_map.draw_mode.preset if isinstance(env_map.draw_mode, MoverMode) else None
+        super().__init__("Mover-preset selection", "Cancel", "Select")
 
     def on_confirm(self):
         """
@@ -31,7 +32,6 @@ class MoverPresetSelectionDialog(ScrollDialog):
         """
         When user cancels the dialog. Closes the dialog and allows the user to place and remove tiles at the map.
         """
-        self.env_map.set_tiles_mode()
         self.dismiss()
 
     def add_dialog_content(self):
