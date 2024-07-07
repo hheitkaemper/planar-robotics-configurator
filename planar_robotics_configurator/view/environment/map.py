@@ -383,6 +383,7 @@ class EnvironmentMap(MDWidget):
         Removes all drawn movers and redraw all movers in the current environment.
         """
         self.scatter.movers_canvas.clear()
+        self.scatter.movers_collision_canvas.clear()
         for mover in self.environment.movers:
             self.draw_mover(mover)
 

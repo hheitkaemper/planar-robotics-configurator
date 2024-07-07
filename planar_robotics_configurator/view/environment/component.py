@@ -45,7 +45,15 @@ class EnvironmentComponent(MDFloatLayout, Component):
         try:
             mp_xml_str = ""
             for working_station in self.environment.working_stations:
-                mp_xml_str = f'\n\t<include file="{working_station.fileRef}"/>'
+                import tempfile
+                import xml.etree.ElementTree as ET
+                tmp = tempfile.NamedTemporaryFile(delete=False)
+                et = ET.parse(working_station.fileRef)
+                body = et.find("worldbody").find("body")
+                body.attrib["pos"] = (f'{working_station.position[0] / 100} {working_station.position[1] / 100} '
+                                      f'{working_station.position[2] / 100}')
+                et.write(tmp.name)
+                mp_xml_str += f'\n\t<include file="{tmp.name}"/>'
             custom_model_xml_strings = {
                 "custom_outworldbody_xml_str": mp_xml_str
             }

@@ -8,6 +8,7 @@ class NonEmptyTextField(MDTextField):
         self.line_color_focus = (1, 1, 1, 1)
         self.text_color_focus = (1, 1, 1, 1)
         self.hint_text_color_focus = (1, 1, 1, 1)
+        self.write_tab = False
 
     def is_empty(self) -> bool:
         return len(self.text.strip()) == 0
