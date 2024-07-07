@@ -1,7 +1,8 @@
 from kivy.metrics import dp
 from kivymd.uix.gridlayout import MDGridLayout
 
-from planar_robotics_configurator.view.environment.dialog import EnvironmentSettingsDialog, MoverPresetSelectionDialog
+from planar_robotics_configurator.view.environment.dialog import EnvironmentSettingsDialog, MoverPresetSelectionDialog, \
+    HideSettings
 from planar_robotics_configurator.view.utils import CustomIconButton, Divider, CustomSnackbar
 
 
@@ -29,6 +30,9 @@ class EnvironmentSideBar(MDGridLayout):
         self.add_widget(CustomIconButton(icon="crosshairs-gps",
                                          tooltip_text="Center map",
                                          on_release=lambda touch: self.env_component.map.center_map()))
+        self.add_widget(CustomIconButton(icon="layers-outline",
+                                         tooltip_text="Edit visibility",
+                                         on_release=lambda touch: HideSettings(env_component.map).open()))
         self.add_widget(CustomIconButton(icon="cog-outline",
                                          tooltip_text="Edit environment",
                                          on_release=lambda touch: self.open_settings()))

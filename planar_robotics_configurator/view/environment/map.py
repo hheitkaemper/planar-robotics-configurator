@@ -75,6 +75,12 @@ class EnvironmentMap(MDWidget):
         self.environment: Environment | None = None
         self.robot_texture: Texture = Image("assets/robot.png").texture
         self.robot_texture.flip_vertical()
+        self.hiding_settings = {
+            "environment_background": True,
+            "tiles": True,
+            "movers": False,
+            "working_stations": True
+        }
         # Kivy coordinate system to environment coordinate system
         with self.scatter.canvas.before:
             Scale(1, -1, 1)
@@ -248,7 +254,14 @@ class EnvironmentMap(MDWidget):
         """
         self.environment = environment
         self.center_map()
+        self.redraw()
+
+    def redraw(self):
+        """
+        Redraws the environment.
+        """
         self.remove_hover_rect()
+        self.remove_hover_robot()
         self.draw_tiles_background()
         self.draw_tiles()
         self.draw_movers()
@@ -273,6 +286,8 @@ class EnvironmentMap(MDWidget):
         Draws a background for the tiles with the size of num_width*tile_width and num_length*tile_length.
         """
         self.scatter.tiles_background_canvas.clear()
+        if not self.hiding_settings["environment_background"]:
+            return
         with self.scatter.tiles_background_canvas:
             Color(0.16, 0.16, 0.16, 1)
             Rectangle(pos=(0, 0),
@@ -295,6 +310,8 @@ class EnvironmentMap(MDWidget):
         :param x: x position of the tile.
         :param y: y position of the tile.
         """
+        if not self.hiding_settings["tiles"]:
+            return
         with self.scatter.tiles_canvas:
             if self.environment.get_tile(x, y) == 1:
                 Color(0.49, 0.49, 0.49, 1)
@@ -309,6 +326,8 @@ class EnvironmentMap(MDWidget):
         Draws all the tiles in the environment.
         """
         self.scatter.tiles_canvas.children = []
+        if not self.hiding_settings["tiles"]:
+            return
         with self.scatter.tiles_canvas:
             Color(0.49, 0.49, 0.49, 1)
             for index, value in np.ndenumerate(self.environment.tiles):
@@ -390,6 +409,8 @@ class EnvironmentMap(MDWidget):
         Draws a mover.
         :params mover: Mover object which provides the position and size of the mover.
         """
+        if not self.hiding_settings["movers"]:
+            return
         with self.scatter.movers_canvas:
             Color(0.85, 0.85, 0.85, 1)
             x_pad = (1 - (mover.preset.width / self.environment.tile_width)) / 2
@@ -407,6 +428,8 @@ class EnvironmentMap(MDWidget):
         Draws a working station.
         :params working_station: WorkingStation object which should be drawn.
         """
+        if not self.hiding_settings["working_stations"]:
+            return
         with self.scatter.working_stations_canvas:
             Color(working_station.color[0], working_station.color[1], working_station.color[2],
                   working_station.color[3])
