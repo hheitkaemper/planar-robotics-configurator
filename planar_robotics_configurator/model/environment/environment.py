@@ -128,9 +128,11 @@ class Environment:
     def create_outworldbody_xml_str(self) -> str:
         import tempfile
         import xml.etree.ElementTree as ET
+        import os
         mp_xml_str = ""
         for working_station in self.working_stations:
-            tmp = tempfile.NamedTemporaryFile(delete=False)
+            dirname, basename = os.path.split(working_station.fileRef)
+            tmp = tempfile.NamedTemporaryFile(delete=False, prefix=basename, dir=dirname)
             et = ET.parse(working_station.fileRef)
             body = et.find("worldbody").find("body")
             body.attrib["pos"] = (f'{working_station.position[0] / 100} {working_station.position[1] / 100} '
@@ -139,7 +141,8 @@ class Environment:
             mp_xml_str += f'\n\t<include file="{tmp.name}"/>'
         for object_instance in self.objects:
             if isinstance(object_instance, RefObject):
-                tmp = tempfile.NamedTemporaryFile(delete=False)
+                dirname, basename = os.path.split(object_instance.fileRef)
+                tmp = tempfile.NamedTemporaryFile(delete=False, prefix=basename, dir=dirname)
                 et = ET.parse(object_instance.fileRef)
                 body = et.find("worldbody").find("body")
                 body.attrib["pos"] = (f'{object_instance.position[0] / 100} {object_instance.position[1] / 100} '
