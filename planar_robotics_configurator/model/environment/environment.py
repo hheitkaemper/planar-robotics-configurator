@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
 import numpy as np
+from gymnasium_planar_robotics.envs.basic_envs import BasicPlanarRoboticsEnv
 
 from planar_robotics_configurator.model.environment.mover import Mover
-from planar_robotics_configurator.model.environment.object import Object
+from planar_robotics_configurator.model.environment.object import Object, RefObject, CubeObject, BallObject
 from planar_robotics_configurator.model.environment.working_station import WorkingStation
 
 
@@ -93,3 +94,76 @@ class Environment:
         """
         assert value in [0, 1]
         self.tiles[x, y] = value
+
+    def create_basic_planar_robotics_env(self, passive_viewer=True) -> BasicPlanarRoboticsEnv:
+        """
+        Create an environment with all the environment settings.
+        """
+        custom_model_xml_strings = {
+            "custom_outworldbody_xml_str": self.create_outworldbody_xml_str()
+        }
+        env = BasicPlanarRoboticsEnv(
+            layout_tiles=self.tiles,
+            num_movers=len(self.movers),
+            tile_params={
+                "mass": self.tile_mass,
+                "size": np.array([self.tile_width / 200, self.tile_length / 200, self.tile_height / 200
+                                  ])
+            },
+            mover_params={
+                "size": np.array(list(map(lambda mover: [mover.preset.width / 200,
+                                                         mover.preset.length / 200,
+                                                         mover.preset.height / 200], self.movers)))
+            },
+            table_height=self.table_height / 100,
+            std_noise=self.std_noise,
+            initial_mover_start_xy_pos=np.array(list(
+                map(lambda mover: [(mover.x + 0.5) * (self.tile_width / 100),
+                                   (mover.y + 0.5) * (self.tile_length / 100)],
+                    self.movers))),
+            custom_model_xml_strings=custom_model_xml_strings,
+            use_mj_passive_viewer=passive_viewer)
+        return env
+
+    def create_outworldbody_xml_str(self) -> str:
+        import tempfile
+        import xml.etree.ElementTree as ET
+        mp_xml_str = ""
+        for working_station in self.working_stations:
+            tmp = tempfile.NamedTemporaryFile(delete=False)
+            et = ET.parse(working_station.fileRef)
+            body = et.find("worldbody").find("body")
+            body.attrib["pos"] = (f'{working_station.position[0] / 100} {working_station.position[1] / 100} '
+                                  f'{working_station.position[2] / 100}')
+            et.write(tmp.name)
+            mp_xml_str += f'\n\t<include file="{tmp.name}"/>'
+        for object_instance in self.objects:
+            if isinstance(object_instance, RefObject):
+                tmp = tempfile.NamedTemporaryFile(delete=False)
+                et = ET.parse(object_instance.fileRef)
+                body = et.find("worldbody").find("body")
+                body.attrib["pos"] = (f'{object_instance.position[0] / 100} {object_instance.position[1] / 100} '
+                                      f'{object_instance.position[2] / 100}')
+                et.write(tmp.name)
+                mp_xml_str += f'\n\t<include file="{tmp.name}"/>'
+            if isinstance(object_instance, CubeObject):
+                root = ET.Element("worldbody")
+                body = ET.SubElement(root, "body")
+                geom = ET.SubElement(body, "geom")
+                geom.attrib["type"] = "box"
+                geom.attrib["pos"] = (f'{object_instance.position[0] / 100} {object_instance.position[1] / 100} '
+                                      f'{object_instance.position[2] / 100}')
+                geom.attrib["size"] = (f'{object_instance.width / 200} {object_instance.length / 200} '
+                                       f'{object_instance.height / 200}')
+                mp_xml_str += f'\n\t{ET.tostring(root)}'
+            if isinstance(object_instance, BallObject):
+                root = ET.Element("worldbody")
+                body = ET.SubElement(root, "body")
+                geom = ET.SubElement(body, "geom")
+                geom.attrib["type"] = "sphere"
+                geom.attrib["pos"] = (f'{object_instance.position[0] / 100} {object_instance.position[1] / 100} '
+                                      f'{object_instance.position[2] / 100}')
+                geom.attrib["size"] = f'{object_instance.radius / 100}'
+                mp_xml_str += f'\n\t{ET.tostring(root)}'
+        print(mp_xml_str)
+        return mp_xml_str
