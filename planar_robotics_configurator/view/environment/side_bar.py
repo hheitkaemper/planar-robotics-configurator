@@ -16,9 +16,15 @@ class EnvironmentSideBar(MDGridLayout):
         self.spacing = [0, dp(5)]
         self.adaptive_size = True
         self.pos_hint = {"center_y": 0.5}
+        self.add_widget(CustomIconButton(icon="alpha-t-box",
+                                         tooltip_text="Draw tiles",
+                                         on_release=lambda touch: self.env_component.map.set_tiles_mode()))
         self.add_widget(CustomIconButton(icon="alpha-m-box",
                                          tooltip_text="Draw mover",
                                          on_release=lambda touch: MoverPresetSelectionDialog(env_component.map).open()))
+        self.add_widget(CustomIconButton(icon="robot-industrial",
+                                         tooltip_text="Draw robot",
+                                         on_release=lambda touch: self.env_component.map.set_working_station_mode()))
         self.add_widget(Divider(orientation="horizontal", width=dp(2), md_bg_color=(1, 1, 1, 1)))
         self.add_widget(CustomIconButton(icon="crosshairs-gps",
                                          tooltip_text="Center map",
