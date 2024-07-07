@@ -168,5 +168,4 @@ class Environment:
                                       f'{object_instance.position[2] / 100}')
                 geom.attrib["size"] = f'{object_instance.radius / 100}'
                 mp_xml_str += f'\n\t{ET.tostring(root)}'
-        print(mp_xml_str)
         return mp_xml_str

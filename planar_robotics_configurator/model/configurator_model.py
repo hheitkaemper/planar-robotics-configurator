@@ -1,5 +1,7 @@
+from planar_robotics_configurator.model.config import Config
 from planar_robotics_configurator.model.environment.environment import Environment
 from planar_robotics_configurator.model.environment.mover_preset import MoverPreset
+from planar_robotics_configurator.model.simulation.algorithm import Algorithm, ConfigAlgorithm
 
 
 class ConfiguratorModel:
@@ -16,8 +18,13 @@ class ConfiguratorModel:
         self.__class__.instance = self
         self.environments: list[Environment] = []
         self.mover_presets: list[MoverPreset] = []
+        self.algorithms: list[Algorithm] = []
 
     def __new__(cls, *args, **kwargs):
         if not cls.instance:
             return super(ConfiguratorModel, cls).__new__(cls)
         return cls.instance
+
+    def load_config(self, config: Config):
+        for algorithm in config.algorithms.values():
+            self.algorithms.append(ConfigAlgorithm.to_algorithm(algorithm))
