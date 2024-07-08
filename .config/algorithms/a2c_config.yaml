@@ -1,5 +1,6 @@
-algo1:
+a2c:
   name: A2C
+  description: A synchronous, deterministic variant of Asynchronous Advantage Actor Critic (A3C). It uses multiple workers to avoid the use of a replay buffer.
   parameters:
     - name: policy
       description: The policy model to use
@@ -12,7 +13,7 @@ algo1:
       parameter_type: TypeParameter
       possible_values: [ ]
       type: 'float'
-      default: '0'
+      default: ''
     - name: n_steps
       description: The number of steps to run for each environment per update (i.e. batch size is n_steps * n_env where n_env is number of environment copies running in parallel)
       parameter_type: TypeParameter
@@ -36,4 +37,94 @@ algo1:
       parameter_type: TypeParameter
       possible_values: [ ]
       type: 'float'
+      default: ''
+    - name: vf_coef
+      description: Value function coefficient for the loss calculation
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'float'
+      default: ''
+    - name: max_grad_norm
+      description: The maximum value for the gradient clipping
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'float'
+      default: ''
+    - name: rms_prop_eps
+      description: RMSProp epsilon. It stabilizes square root computation in denominator of RMSProp update
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'float'
+      default: ''
+    - name: use_rms_prop
+      description: Whether to use RMSprop (default) or Adam as optimizer
+      parameter_type: BooleanParameter
+      possible_values: [ ]
+      type: ''
+      default: ''
+    - name: use_sde
+      description: Whether to use generalized State Dependent Exploration (gSDE) instead of action noise exploration
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'float'
+      default: ''
+    - name: sde_sample_freq
+      description: "Sample a new noise matrix every n steps when using gSDE Default: -1 (only sample at the beginning of the rollout)"
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'int'
+      default: '-1'
+    - name: rollout_buffer_class
+      description: Rollout buffer class to use. If None, it will be automatically selected.
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type:
+      default: ''
+    - name: rollout_buffer_kwargs
+      description: Keyword arguments to pass to the rollout buffer on creation.
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type:
+      default: ''
+    - name: normalize_advantage
+      description: "Whether to normalize or not the advantage stats_window_size (int) – Window size for the rollout logging, specifying the number of episodes to average the reported success rate, mean episode length, and mean reward over"
+      parameter_type: BooleanParameter
+      possible_values: [ ]
+      type: ''
+      default: ''
+    - name: tensorboard_log
+      description: the log location for tensorboard (if None, no logging)
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type:
+      default: 'None'
+    - name: policy_kwargs
+      description: additional arguments to be passed to the policy on creation
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type:
+      default: 'None'
+    - name: verbose
+      description: "Verbosity level: 0 for no output, 1 for info messages (such as device or wrappers used), 2 for debug messages"
+      parameter_type: SelectionParameter
+      possible_values: ["No output", "Info messages", "Debug messages"]
+      type: ''
+      default: ''
+    - name: seed
+      description: Seed for the pseudo random generators
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'int'
+      default: ''
+    - name: device
+      description: Device (cpu, cuda, …) on which the code should be run. Setting it to auto, the code will be run on the GPU if possible.
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type:
+      default: ''
+    - name: _init_setup_model
+      description: Whether or not to build the network at the creation of the instance
+      parameter_type: BooleanParameter
+      possible_values: [ ]
+      type: ''
       default: ''

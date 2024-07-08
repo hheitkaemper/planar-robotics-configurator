@@ -1,0 +1,167 @@
+sacd:
+  name: SAC
+  description: Soft Actor Critic (SAC) Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.
+    SAC is the successor of Soft Q-Learning SQL and incorporates the double Q-learning trick from TD3. A key feature of SAC, and a major difference with common RL algorithms, is that it is trained to maximize a trade-off between expected return and entropy, a measure of randomness in the policy.
+  parameters:
+    - name: policy
+      description: The policy model to use
+      parameter_type: SelectionParameter
+      possible_values: [ "MlpPolicy", "CnnPolicy", "MultiInputPolicy" ]
+      type: ''
+      default: ''
+    - name: learning_rate
+      description: The learning rate, it can be a function of the current progress remaining (from 1 to 0)
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'float'
+      default: ''
+    - name: buffer_size
+      description: size of the replay buffer
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'int'
+      default: ''
+    - name: learning_starts
+      description: how many steps of the model to collect transitions for before learning starts
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'int'
+      default: ''
+    - name: batch_size
+      description: Minibatch size for each gradient update
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'int'
+      default: ''
+    - name: tau
+      description: the soft update coefficient (“Polyak update”, between 0 and 1)
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'float'
+      default: ''
+    - name: gamma
+      description: Discount factor
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'float'
+      default: ''
+    - name: train_freq
+      description: Update the model every train_freq steps. Alternatively pass a tuple of frequency and unit like (5, "step") or (2, "episode").
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'int'
+      default: ''
+    - name: gradient_steps
+      description: How many gradient steps to do after each rollout (see train_freq) Set to -1 means to do as many gradient steps as steps done in the environment during the rollout.
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'int'
+      default: ''
+    - name: gradient_steps
+      description: How many gradient steps to do after each rollout (see train_freq) Set to -1 means to do as many gradient steps as steps done in the environment during the rollout.
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'int'
+      default: ''
+    - name: action_noise
+      description: the action noise type (None by default), this can help for hard exploration problem. Cf common.noise for the different action noise type.
+      parameter_type: SelectionParameter
+      possible_values: ["None", "NormalActionNoise", "OrnsteinUhlenbeckActionNoise", "VectorizedActionNoise"]
+      type: 'int'
+      default: ''
+    - name: rollout_buffer_class
+      description: Rollout buffer class to use. If None, it will be automatically selected.
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type:
+      default: ''
+    - name: rollout_buffer_kwargs
+      description: Keyword arguments to pass to the rollout buffer on creation.
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type:
+      default: ''
+    - name: optimize_memory_usage
+      description: Enable a memory efficient variant of the replay buffer at a cost of more complexity. See https://github.com/DLR-RM/stable-baselines3/issues/37#issuecomment-637501195
+      parameter_type: BooleanParameter
+      possible_values: [ ]
+      type:
+      default: ''
+    - name: ent_coef
+      description: Entropy regularization coefficient. (Equivalent to inverse of reward scale in the original SAC paper.) Controlling exploration/exploitation trade-off. Set it to ‘auto’ to learn it automatically (and ‘auto_0.1’ for using 0.1 as initial value)
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type:
+      default: ''
+    - name: target_update_interval
+      description: update the target network every target_network_update_freq gradient steps.
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'int'
+      default: ''
+    - name: target_entropy
+      description:  target entropy when learning ent_coef (ent_coef = 'auto')
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type:
+      default: ''
+    - name: use_sde
+      description: Whether to use generalized State Dependent Exploration (gSDE) instead of action noise exploration
+      parameter_type: BooleanParameter
+      possible_values: [ ]
+      type: ''
+      default: ''
+    - name: sde_sample_freq
+      description: "Sample a new noise matrix every n steps when using gSDE Default: -1 (only sample at the beginning of the rollout)"
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'int'
+      default: '-1'
+    - name: use_sde_at_warmup
+      description: Whether to use gSDE instead of uniform sampling during the warm up phase (before learning starts)
+      parameter_type: BooleanParameter
+      possible_values: [ ]
+      type: ''
+      default: ''
+    - name: stats_window_size
+      description: Window size for the rollout logging, specifying the number of episodes to average the reported success rate, mean episode length, and mean reward over
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'int'
+      default: ''
+    - name: tensorboard_log
+      description: the log location for tensorboard (if None, no logging)
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type:
+      default: 'None'
+    - name: policy_kwargs
+      description: additional arguments to be passed to the policy on creation
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type:
+      default: 'None'
+    - name: verbose
+      description: "Verbosity level: 0 for no output, 1 for info messages (such as device or wrappers used), 2 for debug messages"
+      parameter_type: SelectionParameter
+      possible_values: ["No output", "Info messages", "Debug messages"]
+      type: ''
+      default: ''
+    - name: seed
+      description: Seed for the pseudo random generators
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type: 'int'
+      default: ''
+    - name: device
+      description: Device (cpu, cuda, …) on which the code should be run. Setting it to auto, the code will be run on the GPU if possible.
+      parameter_type: TypeParameter
+      possible_values: [ ]
+      type:
+      default: ''
+    - name: _init_setup_model
+      description: Whether or not to build the network at the creation of the instance
+      parameter_type: BooleanParameter
+      possible_values: [ ]
+      type: ''
+      default: ''
