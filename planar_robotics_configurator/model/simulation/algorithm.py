@@ -6,12 +6,14 @@ from planar_robotics_configurator.model.simulation.parameter import Parameter, C
 @dataclass(frozen=False)
 class Algorithm:
     name: str
+    description: str
     parameters: list[Parameter] = field(default_factory=list)
 
 
 @dataclass(frozen=False)
 class ConfigAlgorithm:
     name: str
+    description: str
     parameters: list[ConfigParameter] = field(default_factory=list)
 
     @staticmethod
@@ -19,4 +21,4 @@ class ConfigAlgorithm:
         parameters = []
         for parameter in self.parameters:
             parameters.append(ConfigParameter.to_parameter(parameter))
-        return Algorithm(name=self.name, parameters=parameters)
+        return Algorithm(name=self.name, description=self.description, parameters=parameters)
