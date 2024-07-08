@@ -6,7 +6,7 @@ from kivymd.uix.screen import MDScreen
 
 from planar_robotics_configurator.view.environment.component import EnvironmentComponent
 from planar_robotics_configurator.view.navigation_component import NavigationComponent
-from planar_robotics_configurator.view.simulation.simulation_component import SimulationComponent
+from planar_robotics_configurator.view.simulation.component import SimulationComponent
 from planar_robotics_configurator.view.utils import Component
 
 
