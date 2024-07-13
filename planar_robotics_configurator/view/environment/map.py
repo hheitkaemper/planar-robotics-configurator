@@ -1,5 +1,6 @@
 import numpy as np
 from kivy.core.image import Image
+from kivy.core.text import Label as CoreLabel
 from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle, Line
 from kivy.graphics.context_instructions import Scale
@@ -73,6 +74,23 @@ class CollisionLine(Line):
         self.mover = mover
 
 
+class LabelRectangle(Rectangle):
+    """
+    Creates a text with the center at the given position.
+    The size specifies the height of the text field. The width is automatically calculated to fit the height.
+    """
+
+    def __init__(self, text: str, size, pos, **kwargs):
+        self.x = pos[0]
+        self.y = pos[1]
+        label = CoreLabel(text=text, font_size=100)
+        label.refresh()
+        label.texture.flip_vertical()
+        size = (size * label.texture.size[0] / label.texture.size[1], size)
+        super(LabelRectangle, self).__init__(texture=label.texture, size=size,
+                                             pos=(pos[0] - size[0] / 2, pos[1] - size[1] / 2), **kwargs)
+
+
 class EnvironmentMap(MDWidget):
     """
     Defines a map which can be moved by middle and right click and zoomed with scroll-wheel.
@@ -96,7 +114,9 @@ class EnvironmentMap(MDWidget):
             "movers": True,
             "movers_collision": False,
             "working_stations": True,
-            "objects": True
+            "working_stations_name": True,
+            "objects": True,
+            "objects_name": True
         }
         # Kivy coordinate system to environment coordinate system
         with self.scatter.canvas.before:
@@ -301,6 +321,8 @@ class EnvironmentMap(MDWidget):
         """
         Redraws the environment.
         """
+        if self.environment is None:
+            return
         self.remove_hover_rect()
         self.remove_texture_hover_rect()
         self.draw_tiles_background()
@@ -472,18 +494,19 @@ class EnvironmentMap(MDWidget):
         Draws a mover.
         :params mover: Mover object which provides the position and size of the mover.
         """
-        if self.hiding_settings["movers"]:
-            with self.scatter.movers_canvas:
-                Color(0.85, 0.85, 0.85, 1)
-                x_pad = (1 - (mover.preset.width / self.environment.tile_width)) / 2
-                y_pad = (1 - (mover.preset.length / self.environment.tile_length)) / 2
-                Rectangle(pos=self.tile_position_to_scatter(mover.x + x_pad, mover.y + y_pad),
-                          size=self.environment_to_scatter(mover.preset.width, mover.preset.length))
-                Color(0.98, 1, 0.87, 1)
-                x_pad = (1 - (mover.preset.width * 0.9 / self.environment.tile_width)) / 2
-                y_pad = (1 - (mover.preset.length * 0.9 / self.environment.tile_length)) / 2
-                Rectangle(pos=self.tile_position_to_scatter(mover.x + x_pad, mover.y + y_pad),
-                          size=self.environment_to_scatter(mover.preset.width * 0.9, mover.preset.length * 0.9))
+        if not self.hiding_settings["movers"]:
+            return
+        with self.scatter.movers_canvas:
+            Color(0.85, 0.85, 0.85, 1)
+            x_pad = (1 - (mover.preset.width / self.environment.tile_width)) / 2
+            y_pad = (1 - (mover.preset.length / self.environment.tile_length)) / 2
+            Rectangle(pos=self.tile_position_to_scatter(mover.x + x_pad, mover.y + y_pad),
+                      size=self.environment_to_scatter(mover.preset.width, mover.preset.length))
+            Color(0.98, 1, 0.87, 1)
+            x_pad = (1 - (mover.preset.width * 0.9 / self.environment.tile_width)) / 2
+            y_pad = (1 - (mover.preset.length * 0.9 / self.environment.tile_length)) / 2
+            Rectangle(pos=self.tile_position_to_scatter(mover.x + x_pad, mover.y + y_pad),
+                      size=self.environment_to_scatter(mover.preset.width * 0.9, mover.preset.length * 0.9))
         if self.hiding_settings["movers_collision"]:
             with self.scatter.movers_collision_canvas:
                 center_pos = self.tile_position_to_environment(mover.x + 0.5, mover.y + 0.5)
@@ -511,6 +534,11 @@ class EnvironmentMap(MDWidget):
         if not self.hiding_settings["working_stations"]:
             return
         with self.scatter.working_stations_canvas:
+            if self.hiding_settings["working_stations_name"]:
+                Color(1, 1, 1, 1)
+                LabelRectangle(text=working_station.name, size=self.environment_to_scatter(10, 10)[0],
+                               pos=self.environment_to_scatter(working_station.position[0] + 15,
+                                                               working_station.position[1]))
             Color(working_station.color[0], working_station.color[1], working_station.color[2],
                   working_station.color[3])
             Rectangle(
@@ -524,9 +552,11 @@ class EnvironmentMap(MDWidget):
         :params working_station: WorkingStation which should be removed.
         """
         pos = self.environment_to_scatter(working_station.position[0] - 10, working_station.position[1] - 10)
+        pos2 = self.environment_to_scatter(working_station.position[0] + 15, working_station.position[1])
         self.scatter.working_stations_canvas.children[:] = \
             [c for c in self.scatter.working_stations_canvas.children
-             if not (isinstance(c, Rectangle) and (self.is_close(c.pos, pos)))]
+             if not (isinstance(c, Rectangle) and (self.is_close(c.pos, pos)))
+             and not (isinstance(c, LabelRectangle) and self.is_close((c.x, c.y), pos2))]
 
     def draw_object(self, object_instance: Object) -> None:
         """
@@ -536,6 +566,11 @@ class EnvironmentMap(MDWidget):
         if not self.hiding_settings["objects"]:
             return
         with self.scatter.objects_canvas:
+            if self.hiding_settings["objects_name"]:
+                Color(1, 1, 1, 1)
+                LabelRectangle(text=object_instance.name, size=self.environment_to_scatter(10, 10)[0],
+                               pos=self.environment_to_scatter(object_instance.position[0] + 15,
+                                                               object_instance.position[1]))
             Color(object_instance.color[0], object_instance.color[1], object_instance.color[2],
                   object_instance.color[3])
             Rectangle(
@@ -549,9 +584,11 @@ class EnvironmentMap(MDWidget):
         :params working_station: WorkingStation which should be removed.
         """
         pos = self.environment_to_scatter(object_instance.position[0] - 10, object_instance.position[1] - 10)
+        pos2 = self.environment_to_scatter(object_instance.position[0] + 15, object_instance.position[1])
         self.scatter.objects_canvas.children[:] = \
             [c for c in self.scatter.objects_canvas.children
-             if not (isinstance(c, Rectangle) and (self.is_close(c.pos, pos)))]
+             if not (isinstance(c, Rectangle) and (self.is_close(c.pos, pos)))
+             and not (isinstance(c, LabelRectangle) and self.is_close((c.x, c.y), pos2))]
 
     def tile_position_to_scatter(self, x, y) -> (int, int):
         """
