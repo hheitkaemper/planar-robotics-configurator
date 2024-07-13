@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from planar_robotics_configurator.model.simulation.parameter import Parameter, ConfigParameter
+from planar_robotics_configurator.model.algorithm.parameter import Parameter, ConfigParameter
 
 
 @dataclass(frozen=False)

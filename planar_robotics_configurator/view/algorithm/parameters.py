@@ -7,17 +7,17 @@ from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.scrollview import MDScrollView
 from kivymd.uix.widget import MDWidget
 
-from planar_robotics_configurator.model.simulation.parameter import ParameterValue, TypeParameter, BooleanParameter, \
+from planar_robotics_configurator.model.algorithm.parameter import ParameterValue, TypeParameter, BooleanParameter, \
     SelectionParameter
-from planar_robotics_configurator.model.simulation.simulation import Simulation
+from planar_robotics_configurator.model.algorithm.algorithm_configuration import AlgorithmConfiguration
 from planar_robotics_configurator.view.utils import CustomLabel, NonEmptyTextField, CustomIconButton, CustomCheckbox, \
     Divider
 
 
-class SimulationParameter(MDBoxLayout):
+class AlgorithmParameter(MDBoxLayout):
 
     def __init__(self, parameter: ParameterValue):
-        super(SimulationParameter, self).__init__()
+        super(AlgorithmParameter, self).__init__()
         self.parameter = parameter
         self.orientation = "vertical"
         self.size_hint_x = 1
@@ -111,7 +111,7 @@ class SimulationParameters(MDFloatLayout):
         self.container = SimulationParametersContainer()
         self.add_widget(MDScrollView(self.container, size_hint=(1, 1), pos_hint={'x': 0, 'y': 0}))
 
-    def set_simulation(self, simulation: Simulation):
+    def set_simulation(self, simulation: AlgorithmConfiguration):
         self.container.clear_widgets()
         for parameter in simulation.parameters:
-            self.container.add_widget(SimulationParameter(parameter))
+            self.container.add_widget(AlgorithmParameter(parameter))

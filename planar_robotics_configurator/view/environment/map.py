@@ -14,8 +14,8 @@ from kivymd.uix.widget import MDWidget
 from planar_robotics_configurator.model.environment import Environment, Mover
 from planar_robotics_configurator.model.environment.object import Object
 from planar_robotics_configurator.model.environment.working_station import WorkingStation
-from planar_robotics_configurator.view.environment.dialog import MoverSettingsDialog, WorkingStationSettings, \
-    ObjectSettings
+from planar_robotics_configurator.view.environment.dialog import (MoverSettingsDialog, WorkingStationSettings,
+                                                                  ObjectSettings)
 from planar_robotics_configurator.view.utils import CustomSnackbar
 from planar_robotics_configurator.view.environment.draw_mode import (DrawMode, TilesMode, MoverMode,
                                                                      WorkingStationMode, ObjectMode)

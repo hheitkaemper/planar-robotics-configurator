@@ -1,13 +1,13 @@
 from dataclasses import dataclass, field
 
-from planar_robotics_configurator.model.simulation.algorithm import Algorithm
-from planar_robotics_configurator.model.simulation.parameter import ParameterValue
+from planar_robotics_configurator.model.algorithm.algorithm import Algorithm
+from planar_robotics_configurator.model.algorithm.parameter import ParameterValue
 
 
 @dataclass(frozen=False)
-class Simulation:
+class AlgorithmConfiguration:
     """
-    Represent a configuration of a training simulation.
+    Represent a configuration of a training algorithm.
     """
     name: str
     algorithm: Algorithm = None

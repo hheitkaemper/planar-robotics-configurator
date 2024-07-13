@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Mapping
 
-from planar_robotics_configurator.model.simulation.algorithm import ConfigAlgorithm
+from planar_robotics_configurator.model.algorithm.algorithm import ConfigAlgorithm
 
 
 @dataclass(frozen=False)

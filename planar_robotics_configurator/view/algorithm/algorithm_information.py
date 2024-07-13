@@ -4,15 +4,15 @@ from kivymd.uix.label import MDLabel
 from kivymd.uix.menu import MDDropdownMenu
 
 from planar_robotics_configurator.model.configurator_model import ConfiguratorModel
-from planar_robotics_configurator.model.simulation.algorithm import Algorithm
+from planar_robotics_configurator.model.algorithm.algorithm import Algorithm
 from planar_robotics_configurator.view.utils import CustomLabel, AdaptiveDropDownItem, CustomSnackbar
 
 
-class SimulationAlgorithmInformation(MDBoxLayout):
+class AlgorithmInformation(MDBoxLayout):
 
-    def __init__(self, sim_component):
-        super(SimulationAlgorithmInformation, self).__init__()
-        self.sim_component = sim_component
+    def __init__(self, algo_config_component):
+        super(AlgorithmInformation, self).__init__()
+        self.algo_config_component = algo_config_component
         self.orientation = "vertical"
         self.pos_hint = {'x': 0, 'top': 0.8}
         self.size_hint_x = 1
@@ -25,7 +25,7 @@ class SimulationAlgorithmInformation(MDBoxLayout):
         self.dropdown_item.on_release = self.open_menu
         self.dropdown_menu = MDDropdownMenu(position='bottom', caller=self.dropdown_item)
         self.add_widget(MDBoxLayout(
-            CustomLabel(text="Current configuration", padding=[dp(4), dp(0), dp(8), dp(8)]),
+            CustomLabel(text="Current algorithm", padding=[dp(4), dp(0), dp(8), dp(8)]),
             self.dropdown_item,
             orientation='vertical',
             adaptive_height=True))
@@ -43,8 +43,8 @@ class SimulationAlgorithmInformation(MDBoxLayout):
         self.show_desc = False
 
     def open_menu(self):
-        if self.sim_component.simulation is None:
-            CustomSnackbar(text="Please select an simulation first!").open()
+        if self.algo_config_component.configuration is None:
+            CustomSnackbar(text="Please select an configuration first!").open()
             return
         self.dropdown_menu.items = []
         for algorithm in ConfiguratorModel().algorithms:
@@ -70,7 +70,7 @@ class SimulationAlgorithmInformation(MDBoxLayout):
             self.show_desc = True
 
     def select_item(self, algorithm: Algorithm):
-        if self.sim_component.simulation is not None:
-            self.sim_component.simulation.set_algorithm(algorithm)
-        self.sim_component.set_simulation(self.sim_component.simulation)
+        if self.algo_config_component.configuration is not None:
+            self.algo_config_component.configuration.set_algorithm(algorithm)
+        self.algo_config_component.set_simulation(self.algo_config_component.configuration)
         self.dropdown_menu.dismiss()
