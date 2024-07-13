@@ -27,6 +27,8 @@ class AlgorithmParameter(MDBoxLayout):
 
         layout = MDBoxLayout(orientation="horizontal", size_hint_x=1, adaptive_height=True, spacing=dp(10))
         layout.add_widget(CustomLabel(text=parameter.parameter.name, pos_hint={'center_y': 0.5}))
+        if isinstance(parameter.parameter, TypeParameter) and parameter.parameter.type is not None:
+            layout.add_widget(CustomLabel(text=f'[{parameter.parameter.type}]', pos_hint={'center_y': 0.5}))
         layout.add_widget(MDWidget())
         if isinstance(parameter.parameter, TypeParameter):
             field = NonEmptyTextField(text=parameter.value, size_hint_x=None, width=dp(400), pos_hint={'center_y': 0.5},
