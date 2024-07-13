@@ -2,6 +2,9 @@
 requires = ["setuptools >= 61.0.0"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+py-modules = ["planar_robotics_configurator"]
+
 [project]
 name = "planar-robotics-configurator"
 version = "0.1"
