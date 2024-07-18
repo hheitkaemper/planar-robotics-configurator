@@ -5,6 +5,7 @@ from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.screen import MDScreen
 
 from planar_robotics_configurator.view.environment.component import EnvironmentComponent
+from planar_robotics_configurator.view.import_export.component import ImportExportComponent
 from planar_robotics_configurator.view.navigation_component import NavigationComponent
 from planar_robotics_configurator.view.algorithm.component import AlgorithmConfigurationComponent
 from planar_robotics_configurator.view.utils import Component
@@ -26,6 +27,7 @@ class ConfiguratorApp(MDApp):
         sim = AlgorithmConfigurationComponent()
         nav.add_tab("Algorithm", sim)
         nav.add_tab("Environment", EnvironmentComponent())
+        nav.add_tab("Import / Export", ImportExportComponent())
         self.layout.add_widget(nav)
         self.set_view(sim)
         screen.add_widget(self.layout)
