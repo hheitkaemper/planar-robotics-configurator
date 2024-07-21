@@ -8,3 +8,6 @@ class ImportContainer(MDBoxLayout):
         super().__init__()
         self.size_hint = 1, 1
         self.add_widget(MDLabel(text="Import Container"))
+
+    def reset(self):
+        pass
