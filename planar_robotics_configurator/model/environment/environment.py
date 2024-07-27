@@ -169,3 +169,32 @@ class Environment:
                 geom.attrib["size"] = f'{object_instance.radius / 100}'
                 mp_xml_str += f'\n\t{ET.tostring(root)}'
         return mp_xml_str
+
+    def to_config(self):
+        config = {}
+        config['width'] = self.num_width
+        config['length'] = self.num_length
+        config['tiles'] = "".join(
+            "".join(str(self.get_tile(x, y)) for y in range(self.num_length)) for x in range(self.num_width))
+        config['tile_width'] = self.tile_width
+        config['tile_length'] = self.tile_length
+        config['tile_height'] = self.tile_height
+        config['tile_mass'] = self.tile_mass
+        config['table_height'] = self.table_height
+        config['std_noise'] = self.std_noise
+        config['num_movers'] = len(self.movers)
+        mover_config = {}
+        for idx, mover in enumerate(self.movers):
+            mover_config[idx] = mover.to_config()
+        config['movers'] = mover_config
+        config['num_objects'] = len(self.objects)
+        objects_config = {}
+        for idx, obj in enumerate(self.objects):
+            objects_config[idx] = obj.to_config()
+        config['objects'] = objects_config
+        config['num_working_stations'] = len(self.working_stations)
+        working_stations_config = {}
+        for idx, working_station in enumerate(self.working_stations):
+            working_stations_config[idx] = working_station.to_config()
+        config['working_stations'] = working_stations_config
+        return config

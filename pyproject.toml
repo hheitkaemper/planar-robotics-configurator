@@ -19,5 +19,6 @@ dependencies = [
     "kivymd==1.2.0",
     "plyer>=2.1.0",
     "pyobjus >= 1.2.3; sys_platform == 'darwin'",
-    "gymnasium-planar-robotics>=1.0.1"
+    "gymnasium-planar-robotics>=1.0.1",
+    "hydra-zen>=0.13.0"
 ]

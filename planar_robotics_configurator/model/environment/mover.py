@@ -17,3 +17,14 @@ class Mover:
     x: int
     y: int
     collision_shape: list[float]
+
+    def to_config(self):
+        config = {
+            "x": self.x,
+            "y": self.y,
+            "width": self.preset.width,
+            "length": self.preset.length,
+            "height": self.preset.height,
+            "mass": self.preset.mass
+        }
+        return config

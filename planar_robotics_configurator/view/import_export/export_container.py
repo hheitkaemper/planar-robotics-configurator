@@ -1,5 +1,6 @@
 import os
 
+from hydra_zen import to_yaml
 from kivy.metrics import dp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
@@ -62,7 +63,12 @@ class ExportContainer(MDBoxLayout):
         path = self.file_name.text
         if os.path.exists(path):
             os.remove(path)
-        # todo create and save config.
+        config = {}
+        config["env"] = self.selected_env.to_config()
+        config["algo"] = self.selected_algo_config.to_config()
+        with open(path, "w") as f:
+            f.write(to_yaml(config))
+        CustomSnackbar(text="Successfully saved config").open()
 
     def open_algorithm_dropdown_menu(self, menu, item):
         menu.items = []
