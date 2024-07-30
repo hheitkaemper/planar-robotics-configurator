@@ -175,18 +175,18 @@ class Environment:
         config = {}
         config['width'] = self.num_width
         config['length'] = self.num_length
-        config['tiles'] = "".join(
-            "".join(str(self.get_tile(x, y)) for y in range(self.num_length)) for x in range(self.num_width))
-        config['tile_width'] = self.tile_width
-        config['tile_length'] = self.tile_length
-        config['tile_height'] = self.tile_height
+        config['tiles'] = "".join(str(x) for x in self.tiles.reshape(self.num_width * self.num_length))
+        config['tile_width'] = self.tile_width / 2
+        config['tile_length'] = self.tile_length / 2
+        config['tile_height'] = self.tile_height / 2
         config['tile_mass'] = self.tile_mass
+        config['initial_mover_zpos'] = self.initial_mover_zpos
         config['table_height'] = self.table_height
         config['std_noise'] = self.std_noise
         config['num_movers'] = len(self.movers)
         mover_config = {}
         for idx, mover in enumerate(self.movers):
-            mover_config[idx] = mover.to_config()
+            mover_config[idx] = mover.to_config(self.tile_width, self.tile_length)
         config['movers'] = mover_config
         config['num_objects'] = len(self.objects)
         objects_config = {}
@@ -199,3 +199,28 @@ class Environment:
             working_stations_config[idx] = working_station.to_config()
         config['working_stations'] = working_stations_config
         return config
+
+    @staticmethod
+    def from_config(name, config):
+        environment = Environment(name=name, num_width=config["width"], num_length=config["length"],
+                                  tile_width=config["tile_width"] * 2, tile_length=config["tile_length"] * 2,
+                                  tile_height=config["tile_height"] * 2, tile_mass=config["tile_mass"],
+                                  initial_mover_zpos=config["initial_mover_zpos"], table_height=config["table_height"],
+                                  std_noise=config["std_noise"])
+        environment.tiles = np.array([int(x) for x in config["tiles"]]).reshape((environment.num_width,
+                                                                                 environment.num_length))
+        for x in range(config["num_movers"]):
+            mover_config = config["movers"][x]
+            environment.movers.append(Mover.from_config(mover_config, environment.tile_width, environment.tile_length))
+        for x in range(config["num_working_stations"]):
+            working_station_config = config["working_stations"][x]
+            environment.working_stations.append(WorkingStation.from_config(str(x), working_station_config))
+        for x in range(config["num_objects"]):
+            object_config = config["objects"][x]
+            if object_config["type"] == "ref":
+                environment.objects.append(RefObject.from_config(str(x), object_config))
+            if object_config["type"] == "cube":
+                environment.objects.append(CubeObject.from_config(str(x), object_config))
+            if object_config["type"] == "sphere":
+                environment.objects.append(BallObject.from_config(str(x), object_config))
+        return environment

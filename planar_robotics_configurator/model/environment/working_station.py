@@ -17,3 +17,8 @@ class WorkingStation:
             "z": self.position[2]
         }
         return config
+
+    @staticmethod
+    def from_config(name, config):
+        return WorkingStation(name=name, fileRef=config["ref"], position=(config["x"], config["y"], config["z"]),
+                              color=(1, 1, 1, 1))

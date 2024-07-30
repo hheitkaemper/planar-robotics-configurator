@@ -11,6 +11,10 @@ class Object:
     def to_config(self):
         raise NotImplementedError()
 
+    @staticmethod
+    def from_config(name, config):
+        raise NotImplementedError()
+
 
 @dataclass(frozen=False)
 class RefObject(Object):
@@ -26,6 +30,11 @@ class RefObject(Object):
         config["ref"] = self.fileRef
         return config
 
+    @staticmethod
+    def from_config(name, config):
+        return RefObject(name=name, fileRef=config["ref"], position=(config["x"], config["y"], config["z"]),
+                         color=(1, 1, 1, 1))
+
 
 @dataclass(frozen=False)
 class CubeObject(Object):
@@ -40,10 +49,15 @@ class CubeObject(Object):
             "y": self.position[1],
             "z": self.position[2]
         }
-        config["width"] = self.width
-        config["length"] = self.length
-        config["height"] = self.height
+        config["width"] = self.width / 2
+        config["length"] = self.length / 2
+        config["height"] = self.height / 2
         return config
+
+    @staticmethod
+    def from_config(name, config):
+        return CubeObject(name=name, width=config["width"], length=config["length"], height=config["height"],
+                          position=(config["x"], config["y"], config["z"]), color=(1, 1, 1, 1))
 
 
 @dataclass(frozen=False)
@@ -52,10 +66,15 @@ class BallObject(Object):
 
     def to_config(self):
         config = {
-            "type": "ball",
+            "type": "sphere",
             "x": self.position[0],
             "y": self.position[1],
             "z": self.position[2]
         }
         config["radius"] = self.radius
         return config
+
+    @staticmethod
+    def from_config(name, config):
+        return BallObject(name=name, radius=config["radius"], position=(config["x"], config["y"], config["z"]),
+                          color=(1, 1, 1, 1))

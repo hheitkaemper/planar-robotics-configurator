@@ -46,3 +46,11 @@ class AlgorithmConfiguration:
                     continue
                 config[parameter.parameter.name] = parameter.value
         return config
+
+    @staticmethod
+    def from_config(name, algorithm, config):
+        algorithm_configuration = AlgorithmConfiguration(name=name,
+                                                         algorithm=algorithm)
+        for parameter in algorithm_configuration.parameters:
+            parameter.value = str(config[parameter.parameter.name])
+        return algorithm_configuration

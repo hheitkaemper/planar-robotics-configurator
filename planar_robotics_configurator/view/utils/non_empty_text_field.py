@@ -11,4 +11,6 @@ class NonEmptyTextField(MDTextField):
         self.write_tab = False
 
     def is_empty(self) -> bool:
+        if not self.required:
+            return False
         return len(self.text.strip()) == 0
