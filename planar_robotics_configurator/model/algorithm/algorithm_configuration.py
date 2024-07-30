@@ -30,19 +30,19 @@ class AlgorithmConfiguration:
 
     def to_config(self):
         config = {}
-        config['algo_name'] = self.name
+        config['algo_name'] = self.algorithm.name
         for parameter in self.parameters:
             if isinstance(parameter.parameter, SelectionParameter):
                 config[parameter.parameter.name] = parameter.value
             elif isinstance(parameter.parameter, BooleanParameter):
-                config[parameter.parameter.name] = bool(parameter.value)
+                config[parameter.parameter.name] = parameter.value == "True"
             elif isinstance(parameter.parameter, TypeParameter):
                 type = parameter.parameter.type
                 if type == "int":
-                    config[parameter.parameter.name] = int(parameter.value) if parameter.value is not '' else 0
+                    config[parameter.parameter.name] = int(parameter.value) if parameter.value != '' else 0
                     continue
                 if type == "float":
-                    config[parameter.parameter.name] = float(parameter.value) if parameter.value is not '' else 0
+                    config[parameter.parameter.name] = float(parameter.value) if parameter.value != '' else 0
                     continue
                 config[parameter.parameter.name] = parameter.value
         return config

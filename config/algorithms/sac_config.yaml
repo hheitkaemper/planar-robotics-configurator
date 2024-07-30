@@ -14,103 +14,91 @@ sacd:
       parameter_type: TypeParameter
       possible_values: [ ]
       type: 'float'
-      default: ''
+      default: '0.0003'
     - name: buffer_size
       description: size of the replay buffer
       parameter_type: TypeParameter
       possible_values: [ ]
       type: 'int'
-      default: ''
+      default: '1000000'
     - name: learning_starts
       description: how many steps of the model to collect transitions for before learning starts
       parameter_type: TypeParameter
       possible_values: [ ]
       type: 'int'
-      default: ''
+      default: '100'
     - name: batch_size
       description: Minibatch size for each gradient update
       parameter_type: TypeParameter
       possible_values: [ ]
       type: 'int'
-      default: ''
+      default: '256'
     - name: tau
       description: the soft update coefficient (“Polyak update”, between 0 and 1)
       parameter_type: TypeParameter
       possible_values: [ ]
       type: 'float'
-      default: ''
+      default: '0.005'
     - name: gamma
       description: Discount factor
       parameter_type: TypeParameter
       possible_values: [ ]
       type: 'float'
-      default: ''
+      default: '0.99'
     - name: train_freq
       description: Update the model every train_freq steps. Alternatively pass a tuple of frequency and unit like (5, "step") or (2, "episode").
       parameter_type: TypeParameter
       possible_values: [ ]
       type: 'int'
-      default: ''
+      default: '1'
     - name: gradient_steps
       description: How many gradient steps to do after each rollout (see train_freq) Set to -1 means to do as many gradient steps as steps done in the environment during the rollout.
       parameter_type: TypeParameter
       possible_values: [ ]
       type: 'int'
-      default: ''
-    - name: gradient_steps
-      description: How many gradient steps to do after each rollout (see train_freq) Set to -1 means to do as many gradient steps as steps done in the environment during the rollout.
-      parameter_type: TypeParameter
-      possible_values: [ ]
-      type: 'int'
-      default: ''
+      default: '1'
     - name: action_noise
       description: the action noise type (None by default), this can help for hard exploration problem. Cf common.noise for the different action noise type.
       parameter_type: SelectionParameter
       possible_values: ["None", "NormalActionNoise", "OrnsteinUhlenbeckActionNoise", "VectorizedActionNoise"]
       type: 'int'
-      default: ''
-    - name: rollout_buffer_class
-      description: Rollout buffer class to use. If None, it will be automatically selected.
-      parameter_type: TypeParameter
-      possible_values: [ ]
+      default: 'None'
+    - name: replay_buffer_class
+      description: Replay buffer class to use (for instance HerReplayBuffer). If None, it will be automatically selected.
+      parameter_type: SelectionParameter
+      possible_values: ["None"]
       type:
-      default: ''
-    - name: rollout_buffer_kwargs
-      description: Keyword arguments to pass to the rollout buffer on creation.
-      parameter_type: TypeParameter
-      possible_values: [ ]
-      type:
-      default: ''
+      default: 'None'
     - name: optimize_memory_usage
       description: Enable a memory efficient variant of the replay buffer at a cost of more complexity. See https://github.com/DLR-RM/stable-baselines3/issues/37#issuecomment-637501195
       parameter_type: BooleanParameter
       possible_values: [ ]
       type:
-      default: ''
+      default: 'False'
     - name: ent_coef
       description: Entropy regularization coefficient. (Equivalent to inverse of reward scale in the original SAC paper.) Controlling exploration/exploitation trade-off. Set it to ‘auto’ to learn it automatically (and ‘auto_0.1’ for using 0.1 as initial value)
       parameter_type: TypeParameter
       possible_values: [ ]
       type:
-      default: ''
+      default: 'auto'
     - name: target_update_interval
       description: update the target network every target_network_update_freq gradient steps.
       parameter_type: TypeParameter
       possible_values: [ ]
       type: 'int'
-      default: ''
+      default: '1'
     - name: target_entropy
       description:  target entropy when learning ent_coef (ent_coef = 'auto')
       parameter_type: TypeParameter
       possible_values: [ ]
       type:
-      default: ''
+      default: 'auto'
     - name: use_sde
       description: Whether to use generalized State Dependent Exploration (gSDE) instead of action noise exploration
       parameter_type: BooleanParameter
       possible_values: [ ]
       type: ''
-      default: ''
+      default: 'False'
     - name: sde_sample_freq
       description: "Sample a new noise matrix every n steps when using gSDE Default: -1 (only sample at the beginning of the rollout)"
       parameter_type: TypeParameter
@@ -122,21 +110,15 @@ sacd:
       parameter_type: BooleanParameter
       possible_values: [ ]
       type: ''
-      default: ''
+      default: 'False'
     - name: stats_window_size
       description: Window size for the rollout logging, specifying the number of episodes to average the reported success rate, mean episode length, and mean reward over
       parameter_type: TypeParameter
       possible_values: [ ]
       type: 'int'
-      default: ''
+      default: '100'
     - name: tensorboard_log
       description: the log location for tensorboard (if None, no logging)
-      parameter_type: TypeParameter
-      possible_values: [ ]
-      type:
-      default: 'None'
-    - name: policy_kwargs
-      description: additional arguments to be passed to the policy on creation
       parameter_type: TypeParameter
       possible_values: [ ]
       type:
@@ -146,7 +128,7 @@ sacd:
       parameter_type: SelectionParameter
       possible_values: ["No output", "Info messages", "Debug messages"]
       type: ''
-      default: ''
+      default: 'No output'
     - name: seed
       description: Seed for the pseudo random generators
       parameter_type: TypeParameter
@@ -158,10 +140,10 @@ sacd:
       parameter_type: TypeParameter
       possible_values: [ ]
       type:
-      default: ''
+      default: 'auto'
     - name: _init_setup_model
       description: Whether or not to build the network at the creation of the instance
       parameter_type: BooleanParameter
       possible_values: [ ]
       type: ''
-      default: ''
+      default: 'True'

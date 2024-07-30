@@ -10,6 +10,7 @@ class Parameter:
     """
     name: str
     description: str
+    default: str
 
 
 @dataclass(frozen=False)
@@ -24,10 +25,7 @@ class ParameterValue:
     def __post_init__(self):
         if self.value is not None:
             return
-        if isinstance(self.parameter, BooleanParameter):
-            self.value = str(True)
-        if isinstance(self.parameter, TypeParameter):
-            self.value = self.parameter.default
+        self.value = str(self.parameter.default)
 
 
 @dataclass(frozen=False)
@@ -55,7 +53,6 @@ class TypeParameter(Parameter):
     :param default: default value. Should be of the specified type.
     """
     type: str
-    default: str
 
 
 @dataclass(frozen=False)
@@ -74,9 +71,9 @@ class ConfigParameter:
     def to_parameter(self) -> Parameter:
         match self.parameter_type:
             case 'BooleanParameter':
-                return BooleanParameter(self.name, self.description)
+                return BooleanParameter(self.name, self.description, self.default)
             case 'TypeParameter':
-                return TypeParameter(self.name, self.description, self.type, self.default)
+                return TypeParameter(self.name, self.description, self.default, self.type)
             case 'SelectionParameter':
-                return SelectionParameter(self.name, self.description, self.possible_values)
+                return SelectionParameter(self.name, self.description, self.default, self.possible_values)
         raise ValueError(f'Parameter type {self.parameter_type} not supported')
