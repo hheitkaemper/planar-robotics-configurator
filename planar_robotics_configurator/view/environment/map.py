@@ -317,6 +317,20 @@ class EnvironmentMap(MDWidget):
         self.center_map()
         self.redraw()
 
+    def reset(self):
+        """
+        Resets the environment to None.
+        """
+        self.environment = None
+        self.remove_hover_rect()
+        self.remove_texture_hover_rect()
+        self.scatter.tiles_background_canvas.clear()
+        self.scatter.tiles_canvas.children = []
+        self.scatter.movers_canvas.clear()
+        self.scatter.movers_collision_canvas.clear()
+        self.scatter.working_stations_canvas.clear()
+        self.scatter.objects_canvas.clear()
+
     def redraw(self):
         """
         Redraws the environment.

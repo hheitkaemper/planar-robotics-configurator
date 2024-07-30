@@ -63,5 +63,5 @@ class AlgorithmConfigurationSettingsDialog(MDDialog):
             ConfiguratorModel().algorithm_configurations.append(self.configuration)
         else:
             self.configuration.name = self.dialog_content.sim_name.text
-        self.algo_config_component.set_simulation(self.configuration)
+        self.algo_config_component.set_configuration(self.configuration)
         self.dismiss()

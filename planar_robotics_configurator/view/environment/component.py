@@ -33,8 +33,13 @@ class EnvironmentComponent(MDFloatLayout, Component):
 
     def set_environment(self, environment: Environment):
         self.environment = environment
-        self.map.set_environment(environment)
-        self.selection.set_text(environment.name)
+        if environment is None:
+            self.selection.set_text("None")
+            self.map.reset()
+        else:
+            self.selection.set_text(environment.name)
+            self.map.set_environment(environment)
+
 
     def show_preview(self):
         if self.environment is None:

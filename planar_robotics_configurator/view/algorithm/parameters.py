@@ -14,10 +14,10 @@ from planar_robotics_configurator.view.utils import CustomLabel, NonEmptyTextFie
     Divider
 
 
-class AlgorithmParameter(MDBoxLayout):
+class AlgorithmConfigurationParameter(MDBoxLayout):
 
     def __init__(self, parameter: ParameterValue):
-        super(AlgorithmParameter, self).__init__()
+        super(AlgorithmConfigurationParameter, self).__init__()
         self.parameter = parameter
         self.orientation = "vertical"
         self.size_hint_x = 1
@@ -95,7 +95,7 @@ class AlgorithmParameter(MDBoxLayout):
             self.expand_button.icon = "chevron-down"
 
 
-class SimulationParametersContainer(MDBoxLayout):
+class AlgorithmConfigurationParametersContainer(MDBoxLayout):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -105,15 +105,17 @@ class SimulationParametersContainer(MDBoxLayout):
         self.orientation = "vertical"
 
 
-class SimulationParameters(MDFloatLayout):
+class AlgorithmConfigurationParameters(MDFloatLayout):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.size_hint = 0.8, 1
-        self.container = SimulationParametersContainer()
+        self.container = AlgorithmConfigurationParametersContainer()
         self.add_widget(MDScrollView(self.container, size_hint=(1, 1), pos_hint={'x': 0, 'y': 0}))
 
-    def set_simulation(self, simulation: AlgorithmConfiguration):
+    def set_configuration(self, configuration: AlgorithmConfiguration):
         self.container.clear_widgets()
-        for parameter in simulation.parameters:
-            self.container.add_widget(AlgorithmParameter(parameter))
+        if configuration is None:
+            return
+        for parameter in configuration.parameters:
+            self.container.add_widget(AlgorithmConfigurationParameter(parameter))

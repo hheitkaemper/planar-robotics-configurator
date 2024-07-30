@@ -18,9 +18,13 @@ class SimulationSideInformation(MDFloatLayout):
         self.algorithm_info = AlgorithmInformation(self.sim_component)
         self.add_widget(self.algorithm_info)
 
-    def set_simulation(self, simulation: AlgorithmConfiguration):
-        self.selection.set_text(simulation.name)
-        self.set_algorithm(simulation.algorithm)
+    def set_configuration(self, configuration: AlgorithmConfiguration):
+        if configuration is None:
+            self.selection.set_text("None")
+            self.set_algorithm(None)
+        else:
+            self.selection.set_text(configuration.name)
+            self.set_algorithm(configuration.algorithm)
 
-    def set_algorithm(self, algorithm: Algorithm):
+    def set_algorithm(self, algorithm: Algorithm | None):
         self.algorithm_info.set_algorithm(algorithm)

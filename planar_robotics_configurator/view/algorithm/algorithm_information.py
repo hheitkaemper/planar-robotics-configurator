@@ -72,5 +72,5 @@ class AlgorithmInformation(MDBoxLayout):
     def select_item(self, algorithm: Algorithm):
         if self.algo_config_component.configuration is not None:
             self.algo_config_component.configuration.set_algorithm(algorithm)
-        self.algo_config_component.set_simulation(self.algo_config_component.configuration)
+        self.algo_config_component.set_configuration(self.algo_config_component.configuration)
         self.dropdown_menu.dismiss()
