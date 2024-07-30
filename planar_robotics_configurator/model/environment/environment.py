@@ -33,6 +33,7 @@ class Environment:
     tile_length: float
     tile_height: float
     tile_mass: float
+    initial_mover_zpos: float
     table_height: float
     std_noise: float
     movers: list[Mover] = field(default_factory=list)
@@ -107,19 +108,19 @@ class Environment:
             num_movers=len(self.movers),
             tile_params={
                 "mass": self.tile_mass,
-                "size": np.array([self.tile_width / 200, self.tile_length / 200, self.tile_height / 200
+                "size": np.array([self.tile_width / 2, self.tile_length / 2, self.tile_height / 2
                                   ])
             },
             mover_params={
-                "size": np.array(list(map(lambda mover: [mover.preset.width / 200,
-                                                         mover.preset.length / 200,
-                                                         mover.preset.height / 200], self.movers)))
+                "size": np.array(list(map(lambda mover: [mover.preset.width / 2,
+                                                         mover.preset.length / 2,
+                                                         mover.preset.height / 2], self.movers)))
             },
-            table_height=self.table_height / 100,
+            table_height=self.table_height,
             std_noise=self.std_noise,
             initial_mover_start_xy_pos=np.array(list(
-                map(lambda mover: [(mover.x + 0.5) * (self.tile_width / 100),
-                                   (mover.y + 0.5) * (self.tile_length / 100)],
+                map(lambda mover: [(mover.x + 0.5) * self.tile_width,
+                                   (mover.y + 0.5) * self.tile_length],
                     self.movers))),
             custom_model_xml_strings=custom_model_xml_strings,
             use_mj_passive_viewer=passive_viewer)
@@ -135,8 +136,8 @@ class Environment:
             tmp = tempfile.NamedTemporaryFile(delete=False, prefix=basename, dir=dirname)
             et = ET.parse(working_station.fileRef)
             body = et.find("worldbody").find("body")
-            body.attrib["pos"] = (f'{working_station.position[0] / 100} {working_station.position[1] / 100} '
-                                  f'{working_station.position[2] / 100}')
+            body.attrib["pos"] = (f'{working_station.position[0]} {working_station.position[1]} '
+                                  f'{working_station.position[2]}')
             et.write(tmp.name)
             mp_xml_str += f'\n\t<include file="{tmp.name}"/>'
         for object_instance in self.objects:
@@ -145,8 +146,8 @@ class Environment:
                 tmp = tempfile.NamedTemporaryFile(delete=False, prefix=basename, dir=dirname)
                 et = ET.parse(object_instance.fileRef)
                 body = et.find("worldbody").find("body")
-                body.attrib["pos"] = (f'{object_instance.position[0] / 100} {object_instance.position[1] / 100} '
-                                      f'{object_instance.position[2] / 100}')
+                body.attrib["pos"] = (f'{object_instance.position[0]} {object_instance.position[1]} '
+                                      f'{object_instance.position[2]}')
                 et.write(tmp.name)
                 mp_xml_str += f'\n\t<include file="{tmp.name}"/>'
             if isinstance(object_instance, CubeObject):
@@ -154,19 +155,19 @@ class Environment:
                 body = ET.SubElement(root, "body")
                 geom = ET.SubElement(body, "geom")
                 geom.attrib["type"] = "box"
-                geom.attrib["pos"] = (f'{object_instance.position[0] / 100} {object_instance.position[1] / 100} '
-                                      f'{object_instance.position[2] / 100}')
-                geom.attrib["size"] = (f'{object_instance.width / 200} {object_instance.length / 200} '
-                                       f'{object_instance.height / 200}')
+                geom.attrib["pos"] = (f'{object_instance.position[0]} {object_instance.position[1]} '
+                                      f'{object_instance.position[2]}')
+                geom.attrib["size"] = (f'{object_instance.width / 2} {object_instance.length / 2} '
+                                       f'{object_instance.height / 2}')
                 mp_xml_str += f'\n\t{ET.tostring(root)}'
             if isinstance(object_instance, BallObject):
                 root = ET.Element("worldbody")
                 body = ET.SubElement(root, "body")
                 geom = ET.SubElement(body, "geom")
                 geom.attrib["type"] = "sphere"
-                geom.attrib["pos"] = (f'{object_instance.position[0] / 100} {object_instance.position[1] / 100} '
-                                      f'{object_instance.position[2] / 100}')
-                geom.attrib["size"] = f'{object_instance.radius / 100}'
+                geom.attrib["pos"] = (f'{object_instance.position[0]} {object_instance.position[1]} '
+                                      f'{object_instance.position[2]}')
+                geom.attrib["size"] = f'{object_instance.radius}'
                 mp_xml_str += f'\n\t{ET.tostring(root)}'
         return mp_xml_str
 

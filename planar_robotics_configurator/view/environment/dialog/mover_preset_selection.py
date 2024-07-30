@@ -46,7 +46,7 @@ class MoverPresetSelectionDialog(ScrollDialog):
             layout.add_widget(MDBoxLayout(
                 CustomLabel(text=preset.name, pos_hint={"center_y": 0.5}),
                 CustomLabel(
-                    text=f"Size: {preset.width}cm x {preset.length}cm x {preset.height}cm, Mass: {preset.mass}kg",
+                    text=f"Size: {preset.width}m x {preset.length}m x {preset.height}m, Mass: {preset.mass}kg",
                     pos_hint={"center_y": 0.5}), orientation="vertical", adaptive_height=True))
             self.add_scroll_widget(layout)
 

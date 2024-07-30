@@ -17,15 +17,17 @@ class EnvironmentSettingsDialog(ScrollDialog):
                                            input_filter="int")
         self.env_length = NonEmptyTextField(text="10", hint_text="Length", helper_text="Number of tiles", required=True,
                                             input_filter="int")
-        self.table_height = NonEmptyTextField(text="40", hint_text="Table height", required=True,
-                                              helper_text="In centimeters", input_filter="float")
+        self.initial_mover_zpos = NonEmptyTextField(text="0.005", hint_text="Initial mover z-pos", required=True,
+                                              helper_text="In meters", input_filter="float")
+        self.table_height = NonEmptyTextField(text="0.4", hint_text="Table height", required=True,
+                                              helper_text="In meters", input_filter="float")
         self.std_noise = NonEmptyTextField(text="0.00001", hint_text="Std noise", required=True, input_filter="float")
-        self.tiles_width = NonEmptyTextField(text="24", hint_text="Width", required=True, helper_text="In centimeters",
+        self.tiles_width = NonEmptyTextField(text="0.24", hint_text="Width", required=True, helper_text="In meters",
                                              input_filter="float")
-        self.tiles_length = NonEmptyTextField(text="24", hint_text="Length", required=True,
-                                              helper_text="In centimeters", input_filter="float")
-        self.tiles_height = NonEmptyTextField(text="6.7", hint_text="Height", required=True,
-                                              helper_text="In centimeters", input_filter="float")
+        self.tiles_length = NonEmptyTextField(text="0.24", hint_text="Length", required=True,
+                                              helper_text="In meters", input_filter="float")
+        self.tiles_height = NonEmptyTextField(text="0.067", hint_text="Height", required=True,
+                                              helper_text="In meters", input_filter="float")
         self.tiles_mass = NonEmptyTextField(text="5.6", hint_text="Mass", required=True, helper_text="In kilograms",
                                             input_filter="float")
 
@@ -39,6 +41,7 @@ class EnvironmentSettingsDialog(ScrollDialog):
         self.add_scroll_widget(CustomLabel(text="Environment"))
         self.add_scroll_widget(self.env_width)
         self.add_scroll_widget(self.env_length)
+        self.add_scroll_widget(self.initial_mover_zpos)
         self.add_scroll_widget(self.table_height)
         self.add_scroll_widget(self.std_noise)
         self.add_scroll_widget(CustomLabel(text="Tiles"))
@@ -55,6 +58,7 @@ class EnvironmentSettingsDialog(ScrollDialog):
         self.env_name.text = environment.name
         self.env_width.text = str(environment.num_width)
         self.env_length.text = str(environment.num_length)
+        self.initial_mover_zpos.text = str(environment.initial_mover_zpos)
         self.table_height.text = str(environment.table_height)
         self.std_noise.text = f"{environment.std_noise:.10f}"
         self.tiles_width.text = str(environment.tile_width)
@@ -100,6 +104,7 @@ class EnvironmentSettingsDialog(ScrollDialog):
         environment = Environment(name=self.env_name.text,
                                   num_width=int(self.env_width.text),
                                   num_length=int(self.env_length.text),
+                                  initial_mover_zpos=float(self.initial_mover_zpos.text),
                                   table_height=float(self.table_height.text),
                                   std_noise=float(self.std_noise.text),
                                   tile_width=float(self.tiles_width.text),
@@ -116,6 +121,7 @@ class EnvironmentSettingsDialog(ScrollDialog):
         environment = self.environment
         environment.name = self.env_name.text
         environment.set_size(int(self.env_width.text), int(self.env_length.text))
+        environment.initial_mover_zpos = float(self.initial_mover_zpos.text)
         environment.table_height = float(self.table_height.text)
         environment.std_noise = float(self.std_noise.text)
         environment.tile_width = float(self.tiles_width.text)

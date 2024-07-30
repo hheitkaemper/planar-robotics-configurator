@@ -34,13 +34,13 @@ class DialogContent(MDBoxLayout):
         self.add_widget(name_layout)
 
         self.pos_layout = MDBoxLayout(orientation="horizontal", adaptive_height=True, spacing=dp(20))
-        self.x_field = NonEmptyTextField(text=str(x), hint_text="X", helper_text="In centimeters",
+        self.x_field = NonEmptyTextField(text=str(x), hint_text="X", helper_text="In meters",
                                          input_filter="float", pos_hint={"center_y": 0.5})
         self.pos_layout.add_widget(self.x_field)
-        self.y_field = NonEmptyTextField(text=str(y), hint_text="Y", helper_text="In centimeters",
+        self.y_field = NonEmptyTextField(text=str(y), hint_text="Y", helper_text="In meters",
                                          input_filter="float", pos_hint={"center_y": 0.5})
         self.pos_layout.add_widget(self.y_field)
-        self.z_field = NonEmptyTextField(text=str(z), hint_text="Z", helper_text="In centimeters",
+        self.z_field = NonEmptyTextField(text=str(z), hint_text="Z", helper_text="In neters",
                                          input_filter="float", pos_hint={"center_y": 0.5})
         self.pos_layout.add_widget(self.z_field)
         self.add_widget(self.pos_layout)
@@ -76,13 +76,13 @@ class DialogContent(MDBoxLayout):
         self.mode_layout = MDBoxLayout(orientation="horizontal", adaptive_height=True, spacing=dp(20))
         self.file_name = NonEmptyTextField(hint_text="File", helper_text="Mujoco Filepath", pos_hint={"center_y": 0.5},
                                            required=True)
-        self.cube_width = NonEmptyTextField(hint_text="Width", helper_text="In centimeters", pos_hint={"center_y": 0.5},
+        self.cube_width = NonEmptyTextField(hint_text="Width", helper_text="In meters", pos_hint={"center_y": 0.5},
                                             required=True, input_filter="float")
-        self.cube_length = NonEmptyTextField(hint_text="Length", helper_text="In centimeters",
+        self.cube_length = NonEmptyTextField(hint_text="Length", helper_text="In meters",
                                              pos_hint={"center_y": 0.5}, required=True, input_filter="float")
-        self.cube_height = NonEmptyTextField(hint_text="Height", helper_text="In centimeters",
+        self.cube_height = NonEmptyTextField(hint_text="Height", helper_text="In meters",
                                              pos_hint={"center_y": 0.5}, required=True, input_filter="float")
-        self.ball_radius = NonEmptyTextField(hint_text="Radius", helper_text="In centimeters",
+        self.ball_radius = NonEmptyTextField(hint_text="Radius", helper_text="In meters",
                                              pos_hint={"center_y": 0.5}, required=True, input_filter="float")
         self.set_file_ref_mode()
         self.add_widget(self.mode_layout)

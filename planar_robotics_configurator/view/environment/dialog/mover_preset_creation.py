@@ -11,11 +11,11 @@ class MoverPresetCreationDialog(ScrollDialog):
     def __init__(self):
         self.name_field = NonEmptyTextField(hint_text="Name", pos_hint={"center_y": 0.5}, required=True)
         self.width_field = NonEmptyTextField(hint_text="Width", pos_hint={"center_y": 0.5}, required=True,
-                                             helper_text="In centimeters", input_filter="float")
+                                             helper_text="In meters", input_filter="float")
         self.length_field = NonEmptyTextField(hint_text="Length", pos_hint={"center_y": 0.5}, required=True,
-                                              helper_text="In centimeters", input_filter="float")
+                                              helper_text="In meters", input_filter="float")
         self.height_field = NonEmptyTextField(hint_text="Height", pos_hint={"center_y": 0.5}, required=True,
-                                              helper_text="In centimeters", input_filter="float")
+                                              helper_text="In meters", input_filter="float")
         self.mass_field = NonEmptyTextField(hint_text="Mass", pos_hint={"center_y": 0.5}, required=True,
                                             helper_text="In kilograms", input_filter="float")
         super().__init__("Mover-preset creation", confirm_text="Add")

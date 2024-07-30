@@ -25,7 +25,7 @@ class DialogContent(MDBoxLayout):
                                               pos_hint={"center_y": 0.5})
         self.circle_checkbox.bind(active=self.on_check)
         self.circle_layout.add_widget(self.circle_checkbox)
-        self.radius_field = NonEmptyTextField(text="0", hint_text="Radius", helper_text="In centimeters",
+        self.radius_field = NonEmptyTextField(text="0", hint_text="Radius", helper_text="In meters",
                                               input_filter="float", pos_hint={"center_y": 0.5})
         self.circle_layout.add_widget(self.radius_field)
         self.add_widget(self.circle_layout)
@@ -36,10 +36,10 @@ class DialogContent(MDBoxLayout):
                                            pos_hint={"center_y": 0.5})
         self.box_checkbox.bind(active=self.on_check)
         self.box_layout.add_widget(self.box_checkbox)
-        self.width_field = NonEmptyTextField(text="0", hint_text="Width", helper_text="In centimeters",
+        self.width_field = NonEmptyTextField(text="0", hint_text="Width", helper_text="In meters",
                                              input_filter="float", pos_hint={"center_y": 0.5})
         self.box_layout.add_widget(self.width_field)
-        self.length_field = NonEmptyTextField(text="0", hint_text="Length", required=True, helper_text="In centimeters",
+        self.length_field = NonEmptyTextField(text="0", hint_text="Length", required=True, helper_text="In meters",
                                               input_filter="float", pos_hint={"center_y": 0.5})
         self.box_layout.add_widget(self.length_field)
         self.add_widget(self.box_layout)
