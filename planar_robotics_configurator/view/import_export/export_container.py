@@ -108,7 +108,7 @@ class ExportContainer(MDBoxLayout):
 
     def open_file_selection(self, *args):
         res = filechooser.save_file(title="Select file", filters=["*.yaml"])
-        if len(res) == 0:
+        if res is None or len(res) == 0:
             return
         self.file_name.text = res[0]
 

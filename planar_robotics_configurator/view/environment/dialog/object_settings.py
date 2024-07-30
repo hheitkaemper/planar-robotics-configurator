@@ -84,6 +84,8 @@ class DialogContent(MDBoxLayout):
                                              pos_hint={"center_y": 0.5}, required=True, input_filter="float")
         self.ball_radius = NonEmptyTextField(hint_text="Radius", helper_text="In meters",
                                              pos_hint={"center_y": 0.5}, required=True, input_filter="float")
+        self.friction = NonEmptyTextField(hint_text="Friction",
+                                          pos_hint={"center_y": 0.5}, required=True, input_filter="float")
         self.set_file_ref_mode()
         self.add_widget(self.mode_layout)
 
@@ -120,14 +122,16 @@ class DialogContent(MDBoxLayout):
         self.mode_layout.add_widget(self.cube_width)
         self.mode_layout.add_widget(self.cube_length)
         self.mode_layout.add_widget(self.cube_height)
+        self.mode_layout.add_widget(self.friction)
 
     def set_ball_mode(self):
         self.remove_all()
         self.mode_layout.add_widget(self.ball_radius)
+        self.mode_layout.add_widget(self.friction)
 
     def open_file_selection(self, *args):
         res = filechooser.open_file(title="Select file", filters=["*.xml"])
-        if len(res) == 0:
+        if res is None or len(res) == 0:
             return
         self.file_name.text = res[0]
 
@@ -183,10 +187,12 @@ class ObjectSettings(MDDialog):
             self.dialog_content.cube_width.text = str(self.object_instance.width)
             self.dialog_content.cube_length.text = str(self.object_instance.length)
             self.dialog_content.cube_height.text = str(self.object_instance.height)
+            self.dialog_content.friction.text = str(self.object_instance.friction)
         if isinstance(self.object_instance, BallObject):
             self.dialog_content.switch_checks(self.dialog_content.ball_button)
             self.dialog_content.set_ball_mode()
             self.dialog_content.ball_radius.text = str(self.object_instance.radius)
+            self.dialog_content.friction.text = str(self.object_instance.friction)
 
     def field_empty(self) -> bool:
         return (self.dialog_content.name_field.is_empty()
@@ -214,10 +220,12 @@ class ObjectSettings(MDDialog):
                     self.dialog_content.cube_width.is_empty()
                     or self.dialog_content.cube_length.is_empty()
                     or self.dialog_content.cube_height.is_empty()
+                    or self.dialog_content.friction.is_empty()
             ):
                 CustomSnackbar(text="Please fill out all fields").open()
                 return
-            if self.dialog_content.ball_button.active and self.dialog_content.ball_radius.is_empty():
+            if self.dialog_content.ball_button.active and (
+                    self.dialog_content.ball_radius.is_empty() or self.dialog_content.friction.is_empty()):
                 CustomSnackbar(text="Please fill out all fields").open()
                 return
         if not self.check_name():
@@ -245,7 +253,8 @@ class ObjectSettings(MDDialog):
                                              self.dialog_content.color_button.text_color,
                                              float(self.dialog_content.cube_width.text),
                                              float(self.dialog_content.cube_length.text),
-                                             float(self.dialog_content.cube_height.text))
+                                             float(self.dialog_content.cube_height.text),
+                                             float(self.dialog_content.friction.text))
         if self.dialog_content.ball_button.active:
             new_object_instance = BallObject(self.dialog_content.name_field.text,
                                              (float(self.dialog_content.x_field.text),
@@ -253,7 +262,8 @@ class ObjectSettings(MDDialog):
                                               float(self.dialog_content.z_field.text)
                                               ),
                                              self.dialog_content.color_button.text_color,
-                                             float(self.dialog_content.ball_radius.text))
+                                             float(self.dialog_content.ball_radius.text),
+                                             float(self.dialog_content.friction.text))
         if new_object_instance is not None:
             self.env_map.environment.objects.append(new_object_instance)
             self.env_map.draw_object(new_object_instance)

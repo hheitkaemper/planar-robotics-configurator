@@ -36,6 +36,8 @@ class Environment:
     initial_mover_zpos: float
     table_height: float
     std_noise: float
+    min_mass: float
+    max_mass: float
     movers: list[Mover] = field(default_factory=list)
     working_stations: list[WorkingStation] = field(default_factory=list)
     objects: list[Object] = field(default_factory=list)
@@ -206,7 +208,8 @@ class Environment:
                                   tile_width=config["tile_width"] * 2, tile_length=config["tile_length"] * 2,
                                   tile_height=config["tile_height"] * 2, tile_mass=config["tile_mass"],
                                   initial_mover_zpos=config["initial_mover_zpos"], table_height=config["table_height"],
-                                  std_noise=config["std_noise"])
+                                  std_noise=config["std_noise"], min_mass=config["min_mass"],
+                                  max_mass=config["max_mass"])
         environment.tiles = np.array([int(x) for x in config["tiles"]]).reshape((environment.num_width,
                                                                                  environment.num_length))
         for x in range(config["num_movers"]):

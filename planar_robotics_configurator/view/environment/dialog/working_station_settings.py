@@ -52,7 +52,7 @@ class DialogContent(MDBoxLayout):
 
     def open_file_selection(self, *args):
         res = filechooser.open_file(title="Select file", filters=["*.xml"])
-        if len(res) == 0:
+        if res is None or len(res) == 0:
             return
         self.file_name.text = res[0]
 

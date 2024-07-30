@@ -41,6 +41,7 @@ class CubeObject(Object):
     width: float
     length: float
     height: float
+    friction: float
 
     def to_config(self):
         config = {
@@ -63,6 +64,7 @@ class CubeObject(Object):
 @dataclass(frozen=False)
 class BallObject(Object):
     radius: float
+    friction: float
 
     def to_config(self):
         config = {

@@ -54,7 +54,11 @@ class ImportContainer(MDBoxLayout):
                                      on_release=lambda _: self.on_import()))
 
     def reset(self):
-        pass
+        self.file_name.text = ""
+        self.algorithm_name.text = ""
+        self.on_check_algorithm(True)
+        self.environment_name.text = ""
+        self.on_check_environment(True)
 
     def check_fields(self) -> bool:
         if self.file_name.is_empty():
@@ -93,7 +97,7 @@ class ImportContainer(MDBoxLayout):
 
     def open_file_selection(self, *args):
         res = filechooser.open_file(title="Select file", filters=["*.yaml"])
-        if len(res) == 0:
+        if res is None or len(res) == 0:
             return
         self.file_name.text = res[0]
 

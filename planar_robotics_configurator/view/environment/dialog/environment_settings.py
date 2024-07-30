@@ -1,3 +1,6 @@
+from kivy.metrics import dp
+from kivymd.uix.boxlayout import MDBoxLayout
+
 from planar_robotics_configurator.model.configurator_model import ConfiguratorModel
 from planar_robotics_configurator.model.environment import Environment
 from planar_robotics_configurator.view.utils import CustomLabel, NonEmptyTextField, CustomSnackbar, ScrollDialog
@@ -30,6 +33,10 @@ class EnvironmentSettingsDialog(ScrollDialog):
                                               helper_text="In meters", input_filter="float")
         self.tiles_mass = NonEmptyTextField(text="5.6", hint_text="Mass", required=True, helper_text="In kilograms",
                                             input_filter="float")
+        self.min_mass = NonEmptyTextField(text="0", hint_text="Min Mass", required=True, helper_text="In kilograms",
+                                            input_filter="float")
+        self.max_mass = NonEmptyTextField(text="0", hint_text="Max Mass", required=True, helper_text="In kilograms",
+                                            input_filter="float")
 
         super().__init__("Environment creation" if environment is None else "Environment settings",
                          confirm_text="Edit" if environment is not None else "Add")
@@ -49,6 +56,12 @@ class EnvironmentSettingsDialog(ScrollDialog):
         self.add_scroll_widget(self.tiles_length)
         self.add_scroll_widget(self.tiles_height)
         self.add_scroll_widget(self.tiles_mass)
+        self.add_scroll_widget(CustomLabel(text="Objects"))
+        self.add_scroll_widget(MDBoxLayout(
+            self.min_mass,
+            self.max_mass,
+            orientation="horizontal", size_hint_x=1, adaptive_height=True, spacing=dp(10)))
+
 
     def load_environment(self):
         """
@@ -65,6 +78,8 @@ class EnvironmentSettingsDialog(ScrollDialog):
         self.tiles_length.text = str(environment.tile_length)
         self.tiles_height.text = str(environment.tile_height)
         self.tiles_mass.text = str(environment.tile_mass)
+        self.min_mass.text = str(environment.min_mass)
+        self.max_mass.text = str(environment.max_mass)
 
     def on_confirm(self):
         """
@@ -110,7 +125,9 @@ class EnvironmentSettingsDialog(ScrollDialog):
                                   tile_width=float(self.tiles_width.text),
                                   tile_length=float(self.tiles_length.text),
                                   tile_height=float(self.tiles_height.text),
-                                  tile_mass=float(self.tiles_mass.text))
+                                  tile_mass=float(self.tiles_mass.text),
+                                  min_mass=float(self.min_mass.text),
+                                  max_mass=float(self.max_mass.text))
         ConfiguratorModel().environments.append(environment)
         return environment
 
@@ -128,4 +145,6 @@ class EnvironmentSettingsDialog(ScrollDialog):
         environment.tile_length = float(self.tiles_length.text)
         environment.tile_height = float(self.tiles_height.text)
         environment.tile_mass = float(self.tiles_mass.text)
+        environment.min_mass = float(self.min_mass.text)
+        environment.max_mass = float(self.max_mass.text)
         return environment
