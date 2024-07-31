@@ -1,5 +1,6 @@
 from kivy.core.window import Window
 from kivy.metrics import dp
+from kivy.uix.widget import Widget
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
@@ -53,4 +54,15 @@ class ScrollDialog(MDDialog):
             if not child.is_empty():
                 continue
             return False
+        return True
+
+    def check_fields_recursive(self):
+        return self._check_fields_recursive(self)
+
+    def _check_fields_recursive(self, widget: Widget):
+        if isinstance(widget, NonEmptyTextField):
+            return not widget.is_empty()
+        for child in widget.children:
+            if not self._check_fields_recursive(child):
+                return False
         return True

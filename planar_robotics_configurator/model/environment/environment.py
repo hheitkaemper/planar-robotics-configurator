@@ -21,6 +21,10 @@ class Environment:
     :param tile_mass: mass (kg) of the tiles in the environment.
     :param table_height: height (cm) of the table in the environment.
     :param std_noise: Standard deviation of the noise in the environment.
+    :param max_a: Maximal acceleration.
+    :param max_v: Maximal velocity.
+    :param min_friction: Minimal friction.
+    :param max_friction: Max friction.
     :param movers: List of movers in the environment.
     :param working_stations: List of working stations in the environment.
     :param objects: List of objects in the environment.
@@ -38,6 +42,10 @@ class Environment:
     std_noise: float
     min_mass: float
     max_mass: float
+    max_a: float
+    max_v: float
+    min_friction: float
+    max_friction: float
     movers: list[Mover] = field(default_factory=list)
     working_stations: list[WorkingStation] = field(default_factory=list)
     objects: list[Object] = field(default_factory=list)
@@ -185,6 +193,12 @@ class Environment:
         config['initial_mover_zpos'] = self.initial_mover_zpos
         config['table_height'] = self.table_height
         config['std_noise'] = self.std_noise
+        config['min_mass'] = self.min_mass
+        config['max_mass'] = self.max_mass
+        config['max_a'] = self.max_a
+        config['max_v'] = self.max_v
+        config['min_friction'] = self.min_friction
+        config['max_friction'] = self.max_friction
         config['num_movers'] = len(self.movers)
         mover_config = {}
         for idx, mover in enumerate(self.movers):
@@ -209,7 +223,8 @@ class Environment:
                                   tile_height=config["tile_height"] * 2, tile_mass=config["tile_mass"],
                                   initial_mover_zpos=config["initial_mover_zpos"], table_height=config["table_height"],
                                   std_noise=config["std_noise"], min_mass=config["min_mass"],
-                                  max_mass=config["max_mass"])
+                                  max_mass=config["max_mass"], max_a=config["max_a"], max_v=config["max_v"],
+                                  min_friction=config["min_friction"], max_friction=config["max_friction"])
         environment.tiles = np.array([int(x) for x in config["tiles"]]).reshape((environment.num_width,
                                                                                  environment.num_length))
         for x in range(config["num_movers"]):

@@ -21,7 +21,7 @@ class EnvironmentSettingsDialog(ScrollDialog):
         self.env_length = NonEmptyTextField(text="10", hint_text="Length", helper_text="Number of tiles", required=True,
                                             input_filter="int")
         self.initial_mover_zpos = NonEmptyTextField(text="0.005", hint_text="Initial mover z-pos", required=True,
-                                              helper_text="In meters", input_filter="float")
+                                                    helper_text="In meters", input_filter="float")
         self.table_height = NonEmptyTextField(text="0.4", hint_text="Table height", required=True,
                                               helper_text="In meters", input_filter="float")
         self.std_noise = NonEmptyTextField(text="0.00001", hint_text="Std noise", required=True, input_filter="float")
@@ -33,10 +33,16 @@ class EnvironmentSettingsDialog(ScrollDialog):
                                               helper_text="In meters", input_filter="float")
         self.tiles_mass = NonEmptyTextField(text="5.6", hint_text="Mass", required=True, helper_text="In kilograms",
                                             input_filter="float")
-        self.min_mass = NonEmptyTextField(text="0", hint_text="Min Mass", required=True, helper_text="In kilograms",
-                                            input_filter="float")
-        self.max_mass = NonEmptyTextField(text="0", hint_text="Max Mass", required=True, helper_text="In kilograms",
-                                            input_filter="float")
+        self.min_mass = NonEmptyTextField(text="-1", hint_text="Min Mass", required=True, helper_text="In kilograms",
+                                          input_filter="float")
+        self.max_mass = NonEmptyTextField(text="-1", hint_text="Max Mass", required=True, helper_text="In kilograms",
+                                          input_filter="float")
+        self.min_friction = NonEmptyTextField(text="-1", hint_text="Min Friction", required=True, input_filter="float")
+        self.max_friction = NonEmptyTextField(text="-1", hint_text="Max Friction", required=True, input_filter="float")
+        self.max_v = NonEmptyTextField(text="2.0", hint_text="Max Velocity", required=True, input_filter="float",
+                                       helper_text="In meter per second")
+        self.max_a = NonEmptyTextField(text="10.0", hint_text="Max Acceleration", required=True, input_filter="float",
+                                       helper_text="In meter per second squared")
 
         super().__init__("Environment creation" if environment is None else "Environment settings",
                          confirm_text="Edit" if environment is not None else "Add")
@@ -56,12 +62,18 @@ class EnvironmentSettingsDialog(ScrollDialog):
         self.add_scroll_widget(self.tiles_length)
         self.add_scroll_widget(self.tiles_height)
         self.add_scroll_widget(self.tiles_mass)
+        self.add_scroll_widget(CustomLabel(text="Movers"))
+        self.add_scroll_widget(self.max_v)
+        self.add_scroll_widget(self.max_a)
         self.add_scroll_widget(CustomLabel(text="Objects"))
         self.add_scroll_widget(MDBoxLayout(
             self.min_mass,
             self.max_mass,
             orientation="horizontal", size_hint_x=1, adaptive_height=True, spacing=dp(10)))
-
+        self.add_scroll_widget(MDBoxLayout(
+            self.min_friction,
+            self.max_friction,
+            orientation="horizontal", size_hint_x=1, adaptive_height=True, spacing=dp(10)))
 
     def load_environment(self):
         """
@@ -80,6 +92,10 @@ class EnvironmentSettingsDialog(ScrollDialog):
         self.tiles_mass.text = str(environment.tile_mass)
         self.min_mass.text = str(environment.min_mass)
         self.max_mass.text = str(environment.max_mass)
+        self.max_a.text = str(environment.max_a)
+        self.max_v.text = str(environment.max_v)
+        self.min_friction.text = str(environment.min_friction)
+        self.max_friction.text = str(environment.max_friction)
 
     def on_confirm(self):
         """
@@ -88,7 +104,7 @@ class EnvironmentSettingsDialog(ScrollDialog):
         Checks if name is already used.
         Creates or updates environment and sets ths environment as current.
         """
-        if not self.check_fields():
+        if not self.check_fields_recursive():
             CustomSnackbar(text="Please fill out all fields").open()
             return
         if not self.check_name():
@@ -127,7 +143,11 @@ class EnvironmentSettingsDialog(ScrollDialog):
                                   tile_height=float(self.tiles_height.text),
                                   tile_mass=float(self.tiles_mass.text),
                                   min_mass=float(self.min_mass.text),
-                                  max_mass=float(self.max_mass.text))
+                                  max_mass=float(self.max_mass.text),
+                                  max_a=float(self.max_a.text),
+                                  max_v=float(self.max_v.text),
+                                  min_friction=float(self.min_friction.text),
+                                  max_friction=float(self.max_friction.text))
         ConfiguratorModel().environments.append(environment)
         return environment
 
@@ -147,4 +167,8 @@ class EnvironmentSettingsDialog(ScrollDialog):
         environment.tile_mass = float(self.tiles_mass.text)
         environment.min_mass = float(self.min_mass.text)
         environment.max_mass = float(self.max_mass.text)
+        environment.max_a = float(self.max_a.text)
+        environment.max_v = float(self.max_v.text)
+        environment.min_friction = float(self.min_friction.text)
+        environment.max_friction = float(self.max_friction.text)
         return environment
