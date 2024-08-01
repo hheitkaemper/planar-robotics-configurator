@@ -48,7 +48,7 @@ class ScrollDialog(MDDialog):
         return self.dialog_content.children
 
     def check_fields(self) -> bool:
-        for child in self.get_scroll_children():
+        for child in reversed(self.get_scroll_children()):
             if not isinstance(child, NonEmptyTextField):
                 continue
             if not child.is_empty():
@@ -62,7 +62,7 @@ class ScrollDialog(MDDialog):
     def _check_fields_recursive(self, widget: Widget):
         if isinstance(widget, NonEmptyTextField):
             return not widget.is_empty()
-        for child in widget.children:
+        for child in reversed(widget.children):
             if not self._check_fields_recursive(child):
                 return False
         return True

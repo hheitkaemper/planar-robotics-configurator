@@ -48,7 +48,6 @@ class ImportExportComponent(Component, MDFloatLayout):
         self.import_button.md_bg_color = (0.6, 0.6, 0.6, 1)
         self.export_button.md_bg_color = (0.3, 0.3, 0.3, 1)
         self.scroll.add_widget(self.import_container)
-        self.import_container.reset()
 
     def on_export_select(self):
         self.scroll.remove_widget(self.import_container)
@@ -59,6 +58,5 @@ class ImportExportComponent(Component, MDFloatLayout):
         self.export_container.reset()
 
     def on_select(self, _):
-        self.import_container.reset()
         self.export_container.reset()
         pass
