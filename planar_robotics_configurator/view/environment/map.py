@@ -11,14 +11,14 @@ from kivy.input import MotionEvent
 from kivy.uix.scatter import Scatter
 from kivymd.uix.widget import MDWidget
 
-from planar_robotics_configurator.model.environment import Environment, Mover
+from planar_robotics_configurator.model.environment import Environment, Mover, BoxCollisionShape, CircleCollisionShape
 from planar_robotics_configurator.model.environment.object import Object
 from planar_robotics_configurator.model.environment.working_station import WorkingStation
 from planar_robotics_configurator.view.environment.dialog import (MoverSettingsDialog, WorkingStationSettings,
                                                                   ObjectSettings)
-from planar_robotics_configurator.view.utils import CustomSnackbar
 from planar_robotics_configurator.view.environment.draw_mode import (DrawMode, TilesMode, MoverMode,
                                                                      WorkingStationMode, ObjectMode)
+from planar_robotics_configurator.view.utils import CustomSnackbar
 
 
 class EnvironmentScatter(Scatter):
@@ -524,21 +524,19 @@ class EnvironmentMap(MDWidget):
         if self.hiding_settings["movers_collision"]:
             with self.scatter.movers_collision_canvas:
                 center_pos = self.tile_position_to_environment(mover.x + 0.5, mover.y + 0.5)
-                match len(mover.collision_shape):
-                    case 0:
-                        pass
-                    case 1:
-                        pos = self.environment_to_scatter(center_pos[0] - mover.collision_shape[0],
-                                                          center_pos[1] - mover.collision_shape[0])
-                        size = self.environment_to_scatter(mover.collision_shape[0] * 2, mover.collision_shape[0] * 2)
-                        Color(1, 0, 0, 1)
-                        CollisionLine(mover, ellipse=(pos[0], pos[1], size[0], size[1]))
-                    case 2:
-                        pos = self.environment_to_scatter(center_pos[0] - mover.collision_shape[0] / 2,
-                                                          center_pos[1] - mover.collision_shape[1] / 2)
-                        size = self.environment_to_scatter(mover.collision_shape[0], mover.collision_shape[1])
-                        Color(1, 0, 0, 1)
-                        CollisionLine(mover, rectangle=(pos[0], pos[1], size[0], size[1]))
+                if isinstance(mover.collision_shape, CircleCollisionShape):
+                    pos = self.environment_to_scatter(center_pos[0] - mover.collision_shape.radius,
+                                                      center_pos[1] - mover.collision_shape.radius)
+                    size = self.environment_to_scatter(mover.collision_shape.radius * 2,
+                                                       mover.collision_shape.radius * 2)
+                    Color(1, 0, 0, 1)
+                    CollisionLine(mover, ellipse=(pos[0], pos[1], size[0], size[1]))
+                if isinstance(mover.collision_shape, BoxCollisionShape):
+                    pos = self.environment_to_scatter(center_pos[0] - mover.collision_shape.width / 2,
+                                                      center_pos[1] - mover.collision_shape.length / 2)
+                    size = self.environment_to_scatter(mover.collision_shape.width, mover.collision_shape.length)
+                    Color(1, 0, 0, 1)
+                    CollisionLine(mover, rectangle=(pos[0], pos[1], size[0], size[1]))
 
     def draw_working_station(self, working_station: WorkingStation) -> None:
         """
@@ -657,7 +655,7 @@ class EnvironmentMap(MDWidget):
             (x, y) with x, y in environment coordinate-system.
         """
         x, y = self.scatter.to_local(x, y)
-        return -y/100, x/100
+        return -y / 100, x / 100
 
     def environment_to_scatter(self, x, y) -> (float, float):
         """
@@ -669,4 +667,4 @@ class EnvironmentMap(MDWidget):
         Returns:
             (x, y) with x, y in scatter coordinate-system.
         """
-        return y*100, x*100
+        return y * 100, x * 100

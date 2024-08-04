@@ -2,6 +2,8 @@ import random
 import string
 from dataclasses import dataclass
 
+from planar_robotics_configurator.model.environment.collision_shape import CollisionShape, BoxCollisionShape, \
+    CircleCollisionShape
 from planar_robotics_configurator.model.environment.mover_preset import MoverPreset
 
 
@@ -12,13 +14,12 @@ class Mover:
     :param preset: Preset of the planar robot which provides size and mass of the robot.
     :param x: x Position of the planar robot in the tiles coordinate system.
     :param y: y Position of the planar robot in the tiles coordinate system.
-    :param collision_shape: Collision shape of the planar robot in the tiles coordinate system. Can be an empty list,
-        a list with one element for a circular shape and a list with two elements for a box shape.
+    :param collision_shape: Collision shape of the planar robot.
     """
     preset: MoverPreset
     x: int
     y: int
-    collision_shape: list[float]
+    collision_shape: CollisionShape | None
 
     def to_config(self, tile_width, tile_length):
         config = {
@@ -27,7 +28,8 @@ class Mover:
             "width": self.preset.width / 2,
             "length": self.preset.length / 2,
             "height": self.preset.height / 2,
-            "mass": self.preset.mass
+            "mass": self.preset.mass,
+            "collision_shape": self.collision_shape.to_config()
         }
         return config
 
@@ -46,9 +48,16 @@ class Mover:
             ConfiguratorModel().mover_presets.append(preset)
         else:
             preset = presets[0]
+        collision_shape_config = config["collision_shape"]
+        collision_shape = None
+        match collision_shape_config["shape"]:
+            case "box":
+                collision_shape = BoxCollisionShape.from_config(collision_shape_config)
+            case "circle":
+                collision_shape = CircleCollisionShape.from_config(collision_shape_config)
         return Mover(
             preset=preset,
             x=round((config["x"] / tile_width) - 0.5, 0),
             y=round((config["y"] / tile_length) - 0.5, 0),
-            collision_shape=[]
+            collision_shape=collision_shape
         )

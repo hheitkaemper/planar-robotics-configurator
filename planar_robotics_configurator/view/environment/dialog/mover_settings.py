@@ -3,7 +3,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 
-from planar_robotics_configurator.model.environment import Mover
+from planar_robotics_configurator.model.environment import Mover, BoxCollisionShape, CircleCollisionShape
 from planar_robotics_configurator.view.utils import CustomLabel, NonEmptyTextField, CustomSnackbar, CustomCheckbox
 
 
@@ -98,16 +98,13 @@ class MoverSettingsDialog(MDDialog):
         """
         Load the collision_shape of the mover into the text fields.
         """
-        match len(self.mover.collision_shape):
-            case 0:
-                return
-            case 1:
-                self.dialog_content.circle_checkbox.active = True
-                self.dialog_content.radius_field.text = str(self.mover.collision_shape[0])
-            case 2:
-                self.dialog_content.box_checkbox.active = True
-                self.dialog_content.width_field.text = str(self.mover.collision_shape[0])
-                self.dialog_content.length_field.text = str(self.mover.collision_shape[1])
+        if isinstance(self.mover.collision_shape, BoxCollisionShape):
+            self.dialog_content.box_checkbox.active = True
+            self.dialog_content.width_field.text = str(self.mover.collision_shape.width)
+            self.dialog_content.length_field.text = str(self.mover.collision_shape.length)
+        if isinstance(self.mover.collision_shape, CircleCollisionShape):
+            self.dialog_content.circle_checkbox.active = True
+            self.dialog_content.radius_field.text = str(self.mover.collision_shape.radius)
 
     def confirm(self):
         """
@@ -124,15 +121,13 @@ class MoverSettingsDialog(MDDialog):
             if self.dialog_content.radius_field.is_empty():
                 CustomSnackbar(text="Please insert a radius").open()
                 return
-            mover.collision_shape = [float(self.dialog_content.radius_field.text)]
+            mover.collision_shape = CircleCollisionShape(radius=float(self.dialog_content.radius_field.text))
         elif self.dialog_content.box_checkbox.active:
             if self.dialog_content.width_field.is_empty() or self.dialog_content.length_field.is_empty():
                 CustomSnackbar(text="Please insert a width and length").open()
                 return
-            mover.collision_shape = [float(self.dialog_content.width_field.text),
-                                     float(self.dialog_content.length_field.text)]
-        else:
-            mover.collision_shape = []
+            mover.collision_shape = BoxCollisionShape(width=float(self.dialog_content.width_field.text),
+                                                      length=float(self.dialog_content.length_field.text))
         if self.mover is None:
             self.env_map.environment.movers.append(mover)
         self.env_map.draw_mover(mover)
