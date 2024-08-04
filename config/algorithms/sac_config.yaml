@@ -6,9 +6,63 @@ sacd:
     - name: policy
       description: The policy model to use
       parameter_type: SelectionParameter
-      possible_values: [ "MlpPolicy", "CnnPolicy", "MultiInputPolicy" ]
+      possible_values:
+        - name: MlpPolicy
+          parameters:
+            - name: lr_schedule
+              description: Learning rate schedule (could be constant)
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'float'
+              default: ''
+            - name: use_sde
+              description: Whether to use State Dependent Exploration or not.
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: False
+            - name: log_std_init
+              description: Initial value for the log standard deviation.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'float'
+              default: '-3'
+            - name: use_expln
+              description: Use expln() function instead of exp() when using gSDE to ensure a positive standard deviation (cf paper). It allows to keep variance above zero and prevent it from growing too fast. In practice, exp() is usually enough.
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: False
+            - name: clip_mean
+              description: Clip the mean output when using gSDE to avoid numerical instability.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'float'
+              default: '2.0'
+            - name: normalize_images
+              description: Whether to normalize images or not, dividing by 255.0 (True by default).
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: True
+            - name: n_critics
+              description: Number of critic networks to create.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'int'
+              default: '2'
+            - name: share_features_extractor
+              description: Whether to share or not the features extractor between the actor and the critic (this saves computation time).
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: False
+        - name: CnnPolicy
+          parameters: [ ]
+        - name: MultiInputPolicy
+          parameters: [ ]
       type: ''
-      default: ''
+      default: 'MlpPolicy'
     - name: learning_rate
       description: The learning rate, it can be a function of the current progress remaining (from 1 to 0)
       parameter_type: TypeParameter
@@ -60,21 +114,91 @@ sacd:
     - name: action_noise
       description: the action noise type (None by default), this can help for hard exploration problem. Cf common.noise for the different action noise type.
       parameter_type: SelectionParameter
-      possible_values: ["None", "NormalActionNoise", "OrnsteinUhlenbeckActionNoise", "VectorizedActionNoise"]
-      type: 'int'
+      possible_values:
+        - name: None
+          parameters: [ ]
+        - name: NormalActionNoise
+          parameters: [ ]
+        - name: OrnsteinUhlenbeckActionNoise
+          parameters: [ ]
+        - name: VectorizedActionNoise
+          parameters: [ ]
+      type:
       default: 'None'
     - name: replay_buffer_class
       description: Replay buffer class to use (for instance HerReplayBuffer). If None, it will be automatically selected.
       parameter_type: SelectionParameter
-      possible_values: ["None"]
+      possible_values:
+        - name: HerReplayBuffer
+          parameters:
+            - name: buffer_size
+              description: Max number of element in the buffer.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'int'
+              default: ''
+            - name: device
+              description: PyTorch device.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type:
+              default: ''
+            - name: n_envs
+              description: Number of parallel environments.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'int'
+              default: ''
+            - name: optimize_memory_usage
+              description: Enable a memory efficient variant Disabled for now (see https://github.com/DLR-RM/stable-baselines3/pull/243#discussion_r531535702).
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: False
+            - name: handle_timeout_termination
+              description: Handle timeout termination (due to timelimit) separately and treat the task as infinite horizon task. https://github.com/DLR-RM/stable-baselines3/issues/284.
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: True
+            - name: n_sampled_goal
+              description: Number of virtual transitions to create per real transition, by sampling new goals.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'int'
+              default: '4'
+            - name: n_sampled_goal
+              description: Number of virtual transitions to create per real transition, by sampling new goals.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'int'
+              default: '4'
+            - name: goal_selection_strategy
+              description: Strategy for sampling goals for replay. One of [‘episode’, ‘final’, ‘future’]
+              parameter_type: SelectionParameter
+              possible_values:
+                - name: episode
+                  parameters: [ ]
+                - name: final
+                  parameters: [ ]
+                - name: future
+                  parameters: [ ]
+              type:
+              default: 'future'
+            - name: copy_info_dict
+              description: Whether to copy the info dictionary and pass it to compute_reward() method. Please note that the copy may cause a slowdown. False by default.
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: False
       type:
-      default: 'None'
+      default: 'HerReplayBuffer'
     - name: optimize_memory_usage
       description: Enable a memory efficient variant of the replay buffer at a cost of more complexity. See https://github.com/DLR-RM/stable-baselines3/issues/37#issuecomment-637501195
       parameter_type: BooleanParameter
       possible_values: [ ]
       type:
-      default: 'False'
+      default: False
     - name: ent_coef
       description: Entropy regularization coefficient. (Equivalent to inverse of reward scale in the original SAC paper.) Controlling exploration/exploitation trade-off. Set it to ‘auto’ to learn it automatically (and ‘auto_0.1’ for using 0.1 as initial value)
       parameter_type: TypeParameter
@@ -88,7 +212,7 @@ sacd:
       type: 'int'
       default: '1'
     - name: target_entropy
-      description:  target entropy when learning ent_coef (ent_coef = 'auto')
+      description: target entropy when learning ent_coef (ent_coef = 'auto')
       parameter_type: TypeParameter
       possible_values: [ ]
       type:
@@ -97,8 +221,8 @@ sacd:
       description: Whether to use generalized State Dependent Exploration (gSDE) instead of action noise exploration
       parameter_type: BooleanParameter
       possible_values: [ ]
-      type: ''
-      default: 'False'
+      type:
+      default: False
     - name: sde_sample_freq
       description: "Sample a new noise matrix every n steps when using gSDE Default: -1 (only sample at the beginning of the rollout)"
       parameter_type: TypeParameter
@@ -110,7 +234,7 @@ sacd:
       parameter_type: BooleanParameter
       possible_values: [ ]
       type: ''
-      default: 'False'
+      default: False
     - name: stats_window_size
       description: Window size for the rollout logging, specifying the number of episodes to average the reported success rate, mean episode length, and mean reward over
       parameter_type: TypeParameter
@@ -126,8 +250,14 @@ sacd:
     - name: verbose
       description: "Verbosity level: 0 for no output, 1 for info messages (such as device or wrappers used), 2 for debug messages"
       parameter_type: SelectionParameter
-      possible_values: ["No output", "Info messages", "Debug messages"]
-      type: ''
+      possible_values:
+        - name: No output
+          parameters: [ ]
+        - name: Info messages
+          parameters: [ ]
+        - name: Debug messages
+          parameters: [ ]
+      type:
       default: 'No output'
     - name: seed
       description: Seed for the pseudo random generators
@@ -145,5 +275,5 @@ sacd:
       description: Whether or not to build the network at the creation of the instance
       parameter_type: BooleanParameter
       possible_values: [ ]
-      type: ''
-      default: 'True'
+      type:
+      default: True

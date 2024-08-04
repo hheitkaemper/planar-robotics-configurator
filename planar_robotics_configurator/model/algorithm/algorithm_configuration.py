@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
 
 from planar_robotics_configurator.model.algorithm.algorithm import Algorithm
-from planar_robotics_configurator.model.algorithm.parameter import ParameterValue, TypeParameter, BooleanParameter, \
-    SelectionParameter
+from planar_robotics_configurator.model.algorithm.parameter import (TypeParameter, BooleanParameter,
+                                                                    SelectionParameter, SelectionParameterValue,
+                                                                    TypeParameterValue, BooleanParameterValue)
 
 
 @dataclass(frozen=False)
@@ -12,7 +13,7 @@ class AlgorithmConfiguration:
     """
     name: str
     algorithm: Algorithm = None
-    parameters: list[ParameterValue] = field(default_factory=list)
+    parameters: list = field(default_factory=list)
 
     def __post_init__(self):
         self.load_algorithm_parameters()
@@ -26,25 +27,26 @@ class AlgorithmConfiguration:
             return
         self.parameters.clear()
         for parameter in self.algorithm.parameters:
-            self.parameters.append(ParameterValue(parameter))
+            if isinstance(parameter, SelectionParameter):
+                self.parameters.append(SelectionParameterValue(name=parameter.name,
+                                                               description=parameter.description,
+                                                               default=parameter.default,
+                                                               possible_values=parameter.possible_values))
+            if isinstance(parameter, TypeParameter):
+                self.parameters.append(TypeParameterValue(name=parameter.name,
+                                                          description=parameter.description,
+                                                          default=parameter.default,
+                                                          type=parameter.type))
+            if isinstance(parameter, BooleanParameter):
+                self.parameters.append(BooleanParameterValue(name=parameter.name,
+                                                             description=parameter.description,
+                                                             default=parameter.default))
 
     def to_config(self):
         config = {}
         config['algo_name'] = self.algorithm.name
         for parameter in self.parameters:
-            if isinstance(parameter.parameter, SelectionParameter):
-                config[parameter.parameter.name] = parameter.value
-            elif isinstance(parameter.parameter, BooleanParameter):
-                config[parameter.parameter.name] = parameter.value == "True"
-            elif isinstance(parameter.parameter, TypeParameter):
-                type = parameter.parameter.type
-                if type == "int":
-                    config[parameter.parameter.name] = int(parameter.value) if parameter.value != '' else 0
-                    continue
-                if type == "float":
-                    config[parameter.parameter.name] = float(parameter.value) if parameter.value != '' else 0
-                    continue
-                config[parameter.parameter.name] = parameter.value
+            parameter.to_config(config, "")
         return config
 
     @staticmethod
@@ -52,5 +54,5 @@ class AlgorithmConfiguration:
         algorithm_configuration = AlgorithmConfiguration(name=name,
                                                          algorithm=algorithm)
         for parameter in algorithm_configuration.parameters:
-            parameter.value = str(config[parameter.parameter.name])
+            parameter.from_config(config, "")
         return algorithm_configuration
