@@ -14,50 +14,85 @@ from planar_robotics_configurator.view.utils import CustomLabel, NonEmptyTextFie
     Divider
 
 
-class AlgorithmConfigurationParameter(MDBoxLayout):
+class ParameterLayout(MDBoxLayout):
+    def __init__(self, parameter_value: ParameterValue, **kwargs):
+        self.parameter_value = parameter_value
+        super().__init__(orientation="horizontal", size_hint_x=1, adaptive_height=True, spacing=dp(10))
+        self.add_widget(CustomLabel(text=parameter_value.parameter.name, pos_hint={'center_y': 0.5}))
 
-    def __init__(self, parameter: ParameterValue):
+
+class TypeParameterLayout(ParameterLayout):
+    def __init__(self, parameter_value: ParameterValue, **kwargs):
+        super().__init__(parameter_value=parameter_value, kwargs=kwargs)
+        self.add_widget(CustomLabel(text=f'[{parameter_value.parameter.type}]', pos_hint={'center_y': 0.5}))
+        self.add_widget(MDWidget())
+        field = NonEmptyTextField(text=parameter_value.value, size_hint_x=None, width=dp(400),
+                                  pos_hint={'center_y': 0.5}, input_filter=parameter_value.parameter.type)
+        field.bind(text=self.on_text_change)
+        self.add_widget(field)
+
+    def on_text_change(self, instance, value):
+        self.parameter_value.value = value
+
+
+class BooleanParameterLayout(ParameterLayout):
+    def __init__(self, parameter_value: ParameterValue, **kwargs):
+        super().__init__(parameter_value=parameter_value, kwargs=kwargs)
+        self.add_widget(MDWidget())
+        self.padding = [0, dp(10), 0, dp(10)]
+        checkbox = CustomCheckbox(pos_hint={'center_y': 0.5}, active=parameter_value.value == "True")
+        checkbox.bind(active=self.on_checkbox_change)
+        self.add_widget(checkbox)
+
+    def on_checkbox_change(self, instance, value):
+        self.parameter_value.value = str(value)
+
+
+class SelectionParameterLayout(ParameterLayout):
+
+    def __init__(self, parameter_value: ParameterValue, **kwargs):
+        super().__init__(parameter_value=parameter_value, kwargs=kwargs)
+        self.add_widget(MDWidget())
+        self.padding = [0, dp(10), 0, dp(10)]
+        dropdown_item = MDDropDownItem(pos_hint={'center_y': 0.5})
+        if parameter_value.value is None:
+            dropdown_item.set_item("None")
+        else:
+            dropdown_item.set_item(parameter_value.value)
+        dropdown_menu = MDDropdownMenu(position='bottom', caller=dropdown_item)
+        dropdown_item.bind(on_release=lambda *args: dropdown_menu.open())
+        for v in parameter_value.parameter.possible_values:
+            dropdown_menu.items.append({
+                "text": v,
+                "on_release": lambda val=v: self.on_menu_selection(dropdown_menu, dropdown_item, val)
+            })
+        self.add_widget(dropdown_item)
+
+    def on_menu_selection(self, menu, item, value):
+        self.parameter_value.value = value
+        item.set_item(value)
+        menu.dismiss()
+
+
+class AlgorithmConfigurationParameter(MDBoxLayout):
+    def __init__(self, parameter_value: ParameterValue):
         super(AlgorithmConfigurationParameter, self).__init__()
-        self.parameter = parameter
+        self.parameter_value = parameter_value
         self.orientation = "vertical"
         self.size_hint_x = 1
         self.adaptive_height = True
         self.md_bg_color = "#2F2F2F"
         self.padding = [dp(10), 0, dp(10), 0]
-
-        layout = MDBoxLayout(orientation="horizontal", size_hint_x=1, adaptive_height=True, spacing=dp(10))
-        layout.add_widget(CustomLabel(text=parameter.parameter.name, pos_hint={'center_y': 0.5}))
-        if isinstance(parameter.parameter, TypeParameter) and parameter.parameter.type is not None:
-            layout.add_widget(CustomLabel(text=f'[{parameter.parameter.type}]', pos_hint={'center_y': 0.5}))
-        layout.add_widget(MDWidget())
-        if isinstance(parameter.parameter, TypeParameter):
-            field = NonEmptyTextField(text=parameter.value, size_hint_x=None, width=dp(400), pos_hint={'center_y': 0.5},
-                                      input_filter=parameter.parameter.type)
-            field.bind(text=self.on_text_change)
-            layout.add_widget(field)
-        if isinstance(parameter.parameter, BooleanParameter):
-            layout.padding = [0, dp(10), 0, dp(10)]
-            checkbox = CustomCheckbox(pos_hint={'center_y': 0.5}, active=parameter.value == "True")
-            checkbox.bind(active=self.on_checkbox_change)
-            layout.add_widget(checkbox)
-        if isinstance(parameter.parameter, SelectionParameter):
-            layout.padding = [0, dp(10), 0, dp(10)]
-            dropdown_item = MDDropDownItem(pos_hint={'center_y': 0.5})
-            if parameter.value is None:
-                dropdown_item.set_item("None")
-            else:
-                dropdown_item.set_item(parameter.value)
-            dropdown_menu = MDDropdownMenu(position='bottom', caller=dropdown_item)
-            dropdown_item.bind(on_release=lambda *args: dropdown_menu.open())
-            for v in parameter.parameter.possible_values:
-                dropdown_menu.items.append({
-                    "text": v,
-                    "on_release": lambda val=v: self.on_menu_selection(dropdown_menu, dropdown_item, val)
-                })
-            layout.add_widget(dropdown_item)
-        expand_button = CustomIconButton(icon="chevron-down", pos_hint={'center_y': 0.5})
-        expand_button.ripple_scale = 0
-        expand_button.bind(on_release=self.on_expand)
+        if isinstance(parameter_value.parameter, TypeParameter):
+            layout = TypeParameterLayout(parameter_value=parameter_value)
+        elif isinstance(parameter_value.parameter, SelectionParameter):
+            layout = SelectionParameterLayout(parameter_value=parameter_value)
+        elif isinstance(parameter_value.parameter, BooleanParameter):
+            layout = BooleanParameterLayout(parameter_value=parameter_value)
+        else:
+            raise ValueError(f'Parameter type not supported')
+        expand_button = CustomIconButton(icon="chevron-down", pos_hint={'center_y': 0.5}, ripple_scale=0,
+                                         on_release=self.on_expand)
         self.expand_button = expand_button
         layout.add_widget(expand_button)
         self.add_widget(layout)
@@ -65,25 +100,13 @@ class AlgorithmConfigurationParameter(MDBoxLayout):
                                   padding=[0, 0, 0, dp(10)])
         desc_layout.add_widget(Divider(orientation="horizontal", width=dp(2), md_bg_color=(1, 1, 1, 1)))
         desc_layout.add_widget(CustomLabel(text="Description", pos_hint={'center_y': 0.5}))
-        label = MDLabel(text=self.parameter.parameter.description)
-        label.adaptive_height = True
+        label = MDLabel(text=parameter_value.parameter.description, adaptive_height=True)
         label.bind(texture_size=lambda *x: label.setter("height")(
             label, label.texture_size[1]
         ))
         desc_layout.add_widget(label)
         self.desc_layout = desc_layout
         self.show_desc = False
-
-    def on_text_change(self, instance, value):
-        self.parameter.value = value
-
-    def on_checkbox_change(self, instance, value):
-        self.parameter.value = str(value)
-
-    def on_menu_selection(self, menu, item, value):
-        self.parameter.value = value
-        item.set_item(value)
-        menu.dismiss()
 
     def on_expand(self, *args):
         self.show_desc = not self.show_desc
