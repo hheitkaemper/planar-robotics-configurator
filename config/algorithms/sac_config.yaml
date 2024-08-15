@@ -264,7 +264,7 @@ sacd:
       parameter_type: TypeParameter
       possible_values: [ ]
       type: 'int'
-      default: ''
+      default: '0'
     - name: device
       description: Device (cpu, cuda, …) on which the code should be run. Setting it to auto, the code will be run on the GPU if possible.
       parameter_type: TypeParameter

@@ -113,7 +113,7 @@ class MoverSettingsDialog(MDDialog):
         Creates or updates mover and adds the mover to the current environment and draw it.
         """
         if self.mover is None:
-            mover = Mover(self.preset, self.mover_x, self.mover_y, [])
+            mover = Mover(self.preset, self.mover_x, self.mover_y, None)
         else:
             mover = self.mover
             self.env_map.remove_mover(mover)

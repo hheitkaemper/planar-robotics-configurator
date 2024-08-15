@@ -29,7 +29,7 @@ class Mover:
             "length": self.preset.length / 2,
             "height": self.preset.height / 2,
             "mass": self.preset.mass,
-            "collision_shape": self.collision_shape.to_config()
+            "collision_shape": self.collision_shape.to_config() if self.collision_shape is not None else None
         }
         return config
 

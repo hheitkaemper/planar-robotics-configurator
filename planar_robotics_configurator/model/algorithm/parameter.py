@@ -78,9 +78,13 @@ class TypeParameterValue(TypeParameter, Value):
 
     def to_config(self, config, prefix):
         if self.type == "int":
-            config[prefix + self.name] = int(self.value) if self.value != '' else 0
+            v: int = int(self.value) if self.value != '' else int(0)
+            config[prefix + self.name] = v
+            return
         if self.type == "float":
-            config[prefix + self.name] = float(self.value) if self.value != '' else 0
+            v: float = float(self.value) if self.value != '' else float(0)
+            config[prefix + self.name] = v
+            return
         config[prefix + self.name] = self.value
 
     def from_config(self, config, prefix):
