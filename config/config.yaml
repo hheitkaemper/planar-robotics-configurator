@@ -8,3 +8,20 @@ hydra:
   output_subdir: null
   run:
     dir: .
+
+mover_presets:
+  - name: very-small
+    width: 0.113
+    length: 0.113
+    height: 0.012
+    mass: 0.6
+  - name: small
+    width: 0.127
+    length: 0.127
+    height: 0.012
+    mass: 1
+  - name: medium
+    width: 0.155
+    length: 0.155
+    height: 0.012
+    mass: 1.8

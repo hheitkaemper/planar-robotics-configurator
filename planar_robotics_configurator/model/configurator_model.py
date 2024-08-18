@@ -30,3 +30,5 @@ class ConfiguratorModel:
     def load_config(self, config: Config):
         for algorithm in config.algorithms.values():
             self.algorithms.append(ConfigAlgorithm.to_algorithm(algorithm))
+        for preset in config.mover_presets:
+            self.mover_presets.append(preset)
