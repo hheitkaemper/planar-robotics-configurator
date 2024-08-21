@@ -1,9 +1,11 @@
 from kivy.metrics import dp
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.widget import MDWidget
 
 from planar_robotics_configurator.model.configurator_model import ConfiguratorModel
 from planar_robotics_configurator.model.environment import Environment
-from planar_robotics_configurator.view.utils import CustomLabel, NonEmptyTextField, CustomSnackbar, ScrollDialog
+from planar_robotics_configurator.view.utils import CustomLabel, NonEmptyTextField, CustomSnackbar, ScrollDialog, \
+    CustomCheckbox
 
 
 class EnvironmentSettingsDialog(ScrollDialog):
@@ -39,10 +41,20 @@ class EnvironmentSettingsDialog(ScrollDialog):
                                           input_filter="float")
         self.min_friction = NonEmptyTextField(text="-1", hint_text="Min Friction", required=True, input_filter="float")
         self.max_friction = NonEmptyTextField(text="-1", hint_text="Max Friction", required=True, input_filter="float")
-        self.max_v = NonEmptyTextField(text="2.0", hint_text="Max Velocity", required=True, input_filter="float",
+        self.v_max = NonEmptyTextField(text="2.0", hint_text="Max Velocity", required=True, input_filter="float",
                                        helper_text="In meter per second")
-        self.max_a = NonEmptyTextField(text="10.0", hint_text="Max Acceleration", required=True, input_filter="float",
+        self.a_max = NonEmptyTextField(text="10.0", hint_text="Max Acceleration", required=True, input_filter="float",
                                        helper_text="In meter per second squared")
+        self.j_max = NonEmptyTextField(text="100.0", hint_text="Max Jerk", required=True, input_filter="float",
+                                       helper_text="In meter per second to the power of three")
+
+        self.learn_jerk = CustomCheckbox()
+        self.num_circles = NonEmptyTextField(text="40", hint_text="Number of circles", required=True,
+                                             input_filter="int")
+        self.offset = NonEmptyTextField(text="0.0", hint_text="Collision shape safety margin", required=True,
+                                        input_filter="float", helper_text="In meter")
+        self.offset_wall = NonEmptyTextField(text="0.0", hint_text="Wall safety margin", required=True,
+                                        input_filter="float", helper_text="In meter")
 
         super().__init__("Environment creation" if environment is None else "Environment settings",
                          confirm_text="Edit" if environment is not None else "Add")
@@ -63,8 +75,15 @@ class EnvironmentSettingsDialog(ScrollDialog):
         self.add_scroll_widget(self.tiles_height)
         self.add_scroll_widget(self.tiles_mass)
         self.add_scroll_widget(CustomLabel(text="Movers"))
-        self.add_scroll_widget(self.max_v)
-        self.add_scroll_widget(self.max_a)
+        self.add_scroll_widget(self.offset)
+        self.add_scroll_widget(self.offset_wall)
+        self.add_scroll_widget(self.num_circles)
+        self.add_scroll_widget(self.v_max)
+        self.add_scroll_widget(self.a_max)
+        self.add_scroll_widget(MDBoxLayout(CustomLabel(text="Learn jerk"), MDWidget(), self.learn_jerk,
+                                           orientation="horizontal", size_hint_x=1, adaptive_height=True,
+                                           spacing=dp(10)))
+        self.add_scroll_widget(self.j_max)
         self.add_scroll_widget(CustomLabel(text="Objects"))
         self.add_scroll_widget(MDBoxLayout(
             self.min_mass,
@@ -92,8 +111,13 @@ class EnvironmentSettingsDialog(ScrollDialog):
         self.tiles_mass.text = str(environment.tile_mass)
         self.min_mass.text = str(environment.min_mass)
         self.max_mass.text = str(environment.max_mass)
-        self.max_a.text = str(environment.max_a)
-        self.max_v.text = str(environment.max_v)
+        self.offset.text = str(environment.offset)
+        self.offset_wall.text = str(environment.offset_wall)
+        self.num_circles.text = str(environment.num_circles)
+        self.a_max.text = str(environment.a_max)
+        self.v_max.text = str(environment.v_max)
+        self.j_max.text = str(environment.j_max)
+        self.learn_jerk.active = environment.learn_jerk
         self.min_friction.text = str(environment.min_friction)
         self.max_friction.text = str(environment.max_friction)
 
@@ -144,8 +168,13 @@ class EnvironmentSettingsDialog(ScrollDialog):
                                   tile_mass=float(self.tiles_mass.text),
                                   min_mass=float(self.min_mass.text),
                                   max_mass=float(self.max_mass.text),
-                                  max_a=float(self.max_a.text),
-                                  max_v=float(self.max_v.text),
+                                  offset=float(self.offset.text),
+                                  offset_wall=float(self.offset_wall.text),
+                                  num_circles=int(self.num_circles.text),
+                                  a_max=float(self.a_max.text),
+                                  v_max=float(self.v_max.text),
+                                  j_max=float(self.j_max.text),
+                                  learn_jerk=self.learn_jerk.active,
                                   min_friction=float(self.min_friction.text),
                                   max_friction=float(self.max_friction.text))
         ConfiguratorModel().environments.append(environment)
@@ -167,8 +196,13 @@ class EnvironmentSettingsDialog(ScrollDialog):
         environment.tile_mass = float(self.tiles_mass.text)
         environment.min_mass = float(self.min_mass.text)
         environment.max_mass = float(self.max_mass.text)
-        environment.max_a = float(self.max_a.text)
-        environment.max_v = float(self.max_v.text)
+        environment.offset = float(self.offset.text)
+        environment.offset_wall = float(self.offset_wall.text)
+        environment.num_circles = float(self.num_circles.text)
+        environment.a_max = float(self.a_max.text)
+        environment.v_max = float(self.v_max.text)
+        environment.j_max = float(self.j_max.text)
+        environment.learn_jerk = self.learn_jerk.active
         environment.min_friction = float(self.min_friction.text)
         environment.max_friction = float(self.max_friction.text)
         return environment

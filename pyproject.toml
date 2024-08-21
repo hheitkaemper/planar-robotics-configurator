@@ -5,6 +5,7 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 py-modules = ["planar_robotics_configurator"]
 
+
 [project]
 name = "planar-robotics-configurator"
 version = "0.1"
@@ -15,10 +16,10 @@ requires-python = ">=3.11"
 dependencies = [
     "numpy",
     "hydra-core>=1.3.0",
+    "hydra-zen>=0.13.0",
     "kivy>=2.3.0",
     "kivymd==1.2.0",
     "plyer>=2.1.0",
     "pyobjus >= 1.2.3; sys_platform == 'darwin'",
-    "gymnasium-planar-robotics>=1.0.1",
-    "hydra-zen>=0.13.0"
+    "gymnasium-planar-robotics>=1.0.1"
 ]

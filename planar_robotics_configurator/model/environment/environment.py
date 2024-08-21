@@ -21,8 +21,10 @@ class Environment:
     :param tile_mass: mass (kg) of the tiles in the environment.
     :param table_height: height (cm) of the table in the environment.
     :param std_noise: Standard deviation of the noise in the environment.
-    :param max_a: Maximal acceleration.
-    :param max_v: Maximal velocity.
+    :param a_max: Maximal acceleration.
+    :param v_max: Maximal velocity.
+    :param j_max: Maximal jerk.
+    :param learn_jerk: Should the jerk be learned.
     :param min_friction: Minimal friction.
     :param max_friction: Max friction.
     :param movers: List of movers in the environment.
@@ -42,8 +44,13 @@ class Environment:
     std_noise: float
     min_mass: float
     max_mass: float
-    max_a: float
-    max_v: float
+    a_max: float
+    v_max: float
+    j_max: float
+    learn_jerk: bool
+    num_circles: int
+    offset: float
+    offset_wall: float
     min_friction: float
     max_friction: float
     movers: list[Mover] = field(default_factory=list)
@@ -127,6 +134,7 @@ class Environment:
                                                          mover.preset.height / 2], self.movers)))
             },
             table_height=self.table_height,
+            initial_mover_zpos=self.initial_mover_zpos,
             std_noise=self.std_noise,
             initial_mover_start_xy_pos=np.array(list(
                 map(lambda mover: [(mover.x + 0.5) * self.tile_width,
@@ -195,8 +203,13 @@ class Environment:
         config['std_noise'] = self.std_noise
         config['min_mass'] = self.min_mass
         config['max_mass'] = self.max_mass
-        config['max_a'] = self.max_a
-        config['max_v'] = self.max_v
+        config['a_max'] = self.a_max
+        config['v_max'] = self.v_max
+        config['j_max'] = self.j_max
+        config['learn_jerk'] = self.learn_jerk
+        config['num_circles'] = self.num_circles
+        config['offset'] = self.offset
+        config['offset_wall'] = self.offset_wall
         config['min_friction'] = self.min_friction
         config['max_friction'] = self.max_friction
         config['num_movers'] = len(self.movers)
@@ -223,8 +236,11 @@ class Environment:
                                   tile_height=config["tile_height"] * 2, tile_mass=config["tile_mass"],
                                   initial_mover_zpos=config["initial_mover_zpos"], table_height=config["table_height"],
                                   std_noise=config["std_noise"], min_mass=config["min_mass"],
-                                  max_mass=config["max_mass"], max_a=config["max_a"], max_v=config["max_v"],
-                                  min_friction=config["min_friction"], max_friction=config["max_friction"])
+                                  max_mass=config["max_mass"], a_max=config["a_max"], v_max=config["v_max"],
+                                  min_friction=config["min_friction"], max_friction=config["max_friction"],
+                                  num_circles=config["num_circles"], offset=config["offset"],
+                                  offset_wall=config["offset_wall"], j_max=config["j_max"],
+                                  learn_jerk=config["learn_jerk"])
         environment.tiles = np.array([int(x) for x in config["tiles"]]).reshape((environment.num_width,
                                                                                  environment.num_length))
         for x in range(config["num_movers"]):

@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
 
+from omegaconf.errors import ConfigKeyError
+
 
 @dataclass(frozen=False)
 class Parameter:
@@ -52,7 +54,12 @@ class BooleanParameterValue(BooleanParameter, Value):
         config[prefix + self.name] = self.value
 
     def from_config(self, config, prefix):
-        self.value = config[prefix + self.name]
+        try:
+            self.value = config[prefix + self.name]
+        except ConfigKeyError as e:
+            if self.default is None:
+                return
+            self.value = bool(self.default)
 
 
 @dataclass(frozen=False)
@@ -88,7 +95,12 @@ class TypeParameterValue(TypeParameter, Value):
         config[prefix + self.name] = self.value
 
     def from_config(self, config, prefix):
-        self.value = str(config[prefix + self.name])
+        try:
+            self.value = str(config[prefix + self.name])
+        except ConfigKeyError as e:
+            if self.default is None:
+                return
+            self.value = self.default
 
 
 @dataclass(frozen=False)
@@ -137,7 +149,13 @@ class SelectionParameterValue(SelectionParameter, Value):
             parameter_value.to_config(config, prefix + self.name + ".")
 
     def from_config(self, config, prefix):
-        self.value = config[prefix + self.name]
+        try:
+            self.value = config[prefix + self.name]
+            self.update_parameters()
+        except ConfigKeyError as e:
+            if self.default is not None:
+                self.value = self.default
+                self.update_parameters()
         for parameter_value in self.values:
             parameter_value.from_config(config, prefix + self.name + ".")
 

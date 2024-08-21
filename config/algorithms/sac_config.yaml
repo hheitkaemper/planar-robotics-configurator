@@ -1,4 +1,4 @@
-sacd:
+SAC:
   name: SAC
   description: Soft Actor Critic (SAC) Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.
     SAC is the successor of Soft Q-Learning SQL and incorporates the double Q-learning trick from TD3. A key feature of SAC, and a major difference with common RL algorithms, is that it is trained to maximize a trade-off between expected return and entropy, a measure of randomness in the policy.
@@ -10,11 +10,52 @@ sacd:
         - name: MlpPolicy
           parameters:
             - name: lr_schedule
-              description: Learning rate schedule (could be constant)
-              parameter_type: TypeParameter
-              possible_values: [ ]
-              type: 'float'
-              default: ''
+              description: The learning rate, it can be a function of the current progress remaining (from 1 to 0)
+              parameter_type: SelectionParameter
+              possible_values:
+                - name: linear
+                  parameters:
+                    - name: initial_value
+                      description: Initial learning rate schedule
+                      parameter_type: TypeParameter
+                      possible_values: [ ]
+                      type: 'float'
+                      default: '0.003'
+                - name: constant
+                  parameters:
+                    - name: learning_rate
+                      description: Initial learning rate schedule
+                      parameter_type: TypeParameter
+                      possible_values: [ ]
+                      type: 'float'
+                      default: '0.0003'
+              type:
+              default: 'constant'
+            - name: net_arch
+              description: The specification of the policy and value networks.
+              parameter_type: SelectionParameter
+              possible_values:
+                - name: None
+                  parameters: []
+                - name: List
+                  parameters:
+                    - name: net_arch_list
+                      description: "List of the arch. Example: 64, 64, 64"
+                      parameter_type: TypeParameter
+                      possible_values: [ ]
+                      type:
+                      default: '64, 64, 64'
+
+              type: ''
+              default: 'None'
+            - name: activation_fn
+              description: Activation function
+              parameter_type: SelectionParameter
+              possible_values:
+                - name: "<class 'torch.nn.modules.activation.ReLU'>"
+                  parameters: [ ]
+              type: ''
+              default: "<class 'torch.nn.modules.activation.ReLU'>"
             - name: use_sde
               description: Whether to use State Dependent Exploration or not.
               parameter_type: BooleanParameter
@@ -39,6 +80,14 @@ sacd:
               possible_values: [ ]
               type: 'float'
               default: '2.0'
+            - name: features_extractor_class
+              description: Features extractor to use.
+              parameter_type: SelectionParameter
+              possible_values:
+                - name: "<class 'stable_baselines3.common.torch_layers.FlattenExtractor'>"
+                  parameters: [ ]
+              type: ''
+              default: "<class 'stable_baselines3.common.torch_layers.FlattenExtractor'>"
             - name: normalize_images
               description: Whether to normalize images or not, dividing by 255.0 (True by default).
               parameter_type: BooleanParameter
@@ -58,17 +107,228 @@ sacd:
               type:
               default: False
         - name: CnnPolicy
-          parameters: [ ]
+          parameters:
+            - name: lr_schedule
+              description: The learning rate, it can be a function of the current progress remaining (from 1 to 0)
+              parameter_type: SelectionParameter
+              possible_values:
+                - name: linear
+                  parameters:
+                    - name: initial_value
+                      description: Initial learning rate schedule
+                      parameter_type: TypeParameter
+                      possible_values: [ ]
+                      type: 'float'
+                      default: '0.003'
+                - name: constant
+                  parameters:
+                    - name: learning_rate
+                      description: Initial learning rate schedule
+                      parameter_type: TypeParameter
+                      possible_values: [ ]
+                      type: 'float'
+                      default: '0.0003'
+              type:
+              default: 'constant'
+            - name: net_arch
+              description: The specification of the policy and value networks.
+              parameter_type: SelectionParameter
+              possible_values:
+                - name: None
+                  parameters: [ ]
+                - name: List
+                  parameters:
+                    - name: net_arch_list
+                      description: "List of the arch. Example: 64, 64, 64"
+                      parameter_type: TypeParameter
+                      possible_values: [ ]
+                      type:
+                      default: '64, 64, 64'
+
+              type: ''
+              default: 'None'
+            - name: activation_fn
+              description: Activation function
+              parameter_type: SelectionParameter
+              possible_values:
+                - name: "<class 'torch.nn.modules.activation.ReLU'>"
+                  parameters: [ ]
+              type: ''
+              default: "<class 'torch.nn.modules.activation.ReLU'>"
+            - name: use_sde
+              description: Whether to use State Dependent Exploration or not.
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: False
+            - name: log_std_init
+              description: Initial value for the log standard deviation.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'float'
+              default: '-3'
+            - name: use_expln
+              description: Use expln() function instead of exp() when using gSDE to ensure a positive standard deviation (cf paper). It allows to keep variance above zero and prevent it from growing too fast. In practice, exp() is usually enough.
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: False
+            - name: clip_mean
+              description: Clip the mean output when using gSDE to avoid numerical instability.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'float'
+              default: '2.0'
+            - name: features_extractor_class
+              description: Features extractor to use.
+              parameter_type: SelectionParameter
+              possible_values:
+                - name: "<class 'stable_baselines3.common.torch_layers.NatureCNN'>"
+                  parameters: [ ]
+              type: ''
+              default: "<class 'stable_baselines3.common.torch_layers.NatureCNN'>"
+            - name: normalize_images
+              description: Whether to normalize images or not, dividing by 255.0 (True by default).
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: True
+            - name: n_critics
+              description: Number of critic networks to create.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'int'
+              default: '2'
+            - name: share_features_extractor
+              description: Whether to share or not the features extractor between the actor and the critic (this saves computation time).
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: False
         - name: MultiInputPolicy
-          parameters: [ ]
+          parameters:
+            - name: lr_schedule
+              description: The learning rate, it can be a function of the current progress remaining (from 1 to 0)
+              parameter_type: SelectionParameter
+              possible_values:
+                - name: linear
+                  parameters:
+                    - name: initial_value
+                      description: Initial learning rate schedule
+                      parameter_type: TypeParameter
+                      possible_values: [ ]
+                      type: 'float'
+                      default: '0.003'
+                - name: constant
+                  parameters:
+                    - name: learning_rate
+                      description: Initial learning rate schedule
+                      parameter_type: TypeParameter
+                      possible_values: [ ]
+                      type: 'float'
+                      default: '0.0003'
+              type:
+              default: 'constant'
+            - name: net_arch
+              description: The specification of the policy and value networks.
+              parameter_type: SelectionParameter
+              possible_values:
+                - name: None
+                  parameters: [ ]
+                - name: List
+                  parameters:
+                    - name: net_arch_list
+                      description: "List of the arch. Example: 64, 64, 64"
+                      parameter_type: TypeParameter
+                      possible_values: [ ]
+                      type:
+                      default: '64, 64, 64'
+
+              type: ''
+              default: 'None'
+            - name: activation_fn
+              description: Activation function
+              parameter_type: SelectionParameter
+              possible_values:
+                - name: "<class 'torch.nn.modules.activation.ReLU'>"
+                  parameters: [ ]
+              type: ''
+              default: "<class 'torch.nn.modules.activation.ReLU'>"
+            - name: use_sde
+              description: Whether to use State Dependent Exploration or not.
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: False
+            - name: log_std_init
+              description: Initial value for the log standard deviation.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'float'
+              default: '-3'
+            - name: use_expln
+              description: Use expln() function instead of exp() when using gSDE to ensure a positive standard deviation (cf paper). It allows to keep variance above zero and prevent it from growing too fast. In practice, exp() is usually enough.
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: False
+            - name: clip_mean
+              description: Clip the mean output when using gSDE to avoid numerical instability.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'float'
+              default: '2.0'
+            - name: features_extractor_class
+              description: Features extractor to use.
+              parameter_type: SelectionParameter
+              possible_values:
+                - name: "<class 'stable_baselines3.common.torch_layers.CombinedExtractor'>"
+                  parameters: [ ]
+              type: ''
+              default: "<class 'stable_baselines3.common.torch_layers.CombinedExtractor'>"
+            - name: normalize_images
+              description: Whether to normalize images or not, dividing by 255.0 (True by default).
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: True
+            - name: n_critics
+              description: Number of critic networks to create.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'int'
+              default: '2'
+            - name: share_features_extractor
+              description: Whether to share or not the features extractor between the actor and the critic (this saves computation time).
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: False
       type: ''
       default: 'MlpPolicy'
     - name: learning_rate
       description: The learning rate, it can be a function of the current progress remaining (from 1 to 0)
-      parameter_type: TypeParameter
-      possible_values: [ ]
-      type: 'float'
-      default: '0.0003'
+      parameter_type: SelectionParameter
+      possible_values:
+        - name: linear
+          parameters:
+            - name: initial_value
+              description: Initial learning rate schedule
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'float'
+              default: '0.003'
+        - name: constant
+          parameters:
+            - name: learning_rate
+              description: Initial learning rate schedule
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'float'
+              default: '0.0003'
+
+      type: ''
+      default: 'constant'
     - name: buffer_size
       description: size of the replay buffer
       parameter_type: TypeParameter
@@ -147,7 +407,69 @@ sacd:
               description: Number of parallel environments.
               parameter_type: TypeParameter
               possible_values: [ ]
+              type:
+              default: ''
+            - name: optimize_memory_usage
+              description: Enable a memory efficient variant Disabled for now (see https://github.com/DLR-RM/stable-baselines3/pull/243#discussion_r531535702).
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: False
+            - name: handle_timeout_termination
+              description: Handle timeout termination (due to timelimit) separately and treat the task as infinite horizon task. https://github.com/DLR-RM/stable-baselines3/issues/284.
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: True
+            - name: n_sampled_goal
+              description: Number of virtual transitions to create per real transition, by sampling new goals.
+              parameter_type: TypeParameter
+              possible_values: [ ]
               type: 'int'
+              default: '4'
+            - name: n_sampled_goal
+              description: Number of virtual transitions to create per real transition, by sampling new goals.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'int'
+              default: '4'
+            - name: goal_selection_strategy
+              description: Strategy for sampling goals for replay. One of [‘episode’, ‘final’, ‘future’]
+              parameter_type: SelectionParameter
+              possible_values:
+                - name: episode
+                  parameters: [ ]
+                - name: final
+                  parameters: [ ]
+                - name: future
+                  parameters: [ ]
+              type:
+              default: 'future'
+            - name: copy_info_dict
+              description: Whether to copy the info dictionary and pass it to compute_reward() method. Please note that the copy may cause a slowdown. False by default.
+              parameter_type: BooleanParameter
+              possible_values: [ ]
+              type:
+              default: False
+        - name: HerReplayBufferExt
+          parameters:
+            - name: buffer_size
+              description: Max number of element in the buffer.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type: 'int'
+              default: ''
+            - name: device
+              description: PyTorch device.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type:
+              default: ''
+            - name: n_envs
+              description: Number of parallel environments.
+              parameter_type: TypeParameter
+              possible_values: [ ]
+              type:
               default: ''
             - name: optimize_memory_usage
               description: Enable a memory efficient variant Disabled for now (see https://github.com/DLR-RM/stable-baselines3/pull/243#discussion_r531535702).
