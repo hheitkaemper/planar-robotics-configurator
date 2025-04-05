@@ -116,7 +116,8 @@ class EnvironmentMap(MDWidget):
             "working_stations": True,
             "working_stations_name": True,
             "objects": True,
-            "objects_name": True
+            "objects_name": True,
+            "coordinate_system": True
         }
         # Kivy coordinate system to environment coordinate system
         with self.scatter.canvas.before:
@@ -130,6 +131,7 @@ class EnvironmentMap(MDWidget):
             self.scatter.hover_rect = HoverRectangle(-1, -1, pos=(0, 0), size=(1, 1))
             self.scatter.working_stations_canvas = Canvas()
             self.scatter.objects_canvas = Canvas()
+            self.scatter.coordinate_system_canvas = Canvas()
             self.scatter.texture_hover_rect_color = Color(0, 0, 0, 0)
             self.scatter.texture_hover_rect = Rectangle(texture=self.robot_texture, pos=(0, 0), size=(0, 0))
         self.add_widget(self.scatter)
@@ -344,6 +346,7 @@ class EnvironmentMap(MDWidget):
         self.draw_movers()
         self.draw_working_stations()
         self.draw_objects()
+        self.draw_coordinate_system()
 
     def center_map(self):
         """
@@ -370,6 +373,41 @@ class EnvironmentMap(MDWidget):
             Color(0.16, 0.16, 0.16, 1)
             Rectangle(pos=(0, 0),
                       size=self.tile_position_to_scatter(self.environment.num_width, self.environment.num_length))
+
+    def draw_coordinate_system(self):
+        """
+        Draws a coordinate system which displays 1 meter in x and y.
+        """
+        self.scatter.coordinate_system_canvas.clear()
+        if not self.hiding_settings["coordinate_system"]:
+            return
+        with self.scatter.coordinate_system_canvas:
+            Color(1,1,1,1)
+            # For x axis
+            Line(points=[*self.environment_to_scatter(0, 0), *self.environment_to_scatter(1, 0)],
+                 width=1)
+            Line(points=[*self.environment_to_scatter(1, 0), *self.environment_to_scatter(0.96, -0.02)],
+                 width=1)
+            Line(points=[*self.environment_to_scatter(1, 0), *self.environment_to_scatter(0.96, 0.02)],
+                 width=1)
+            LabelRectangle(text="x", size=self.environment_to_scatter(0.1, 0.1)[0],
+                           pos=self.environment_to_scatter(0.5, -0.05))
+            LabelRectangle(text="1 m", size=self.environment_to_scatter(0.1, 0.1)[0],
+                           pos=self.environment_to_scatter(1.0, -0.1))
+            # For y axis
+            Line(points=[*self.environment_to_scatter(0, 0), *self.environment_to_scatter(0, 1)],
+                 width=1)
+            Line(points=[*self.environment_to_scatter(0, 1), *self.environment_to_scatter(-0.02, 0.96)],
+                 width=1)
+            Line(points=[*self.environment_to_scatter(0, 1), *self.environment_to_scatter(0.02, 0.96)],
+                 width=1)
+            LabelRectangle(text="y", size=self.environment_to_scatter(0.1, 0.1)[0],
+                           pos=self.environment_to_scatter(-0.06, 0.5))
+            LabelRectangle(text="1 m", size=self.environment_to_scatter(0.1, 0.1)[0],
+                           pos=self.environment_to_scatter(-0.06, 1.0))
+
+
+
 
     def redraw_tile(self, x, y) -> None:
         """

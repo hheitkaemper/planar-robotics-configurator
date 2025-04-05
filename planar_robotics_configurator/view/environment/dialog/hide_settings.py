@@ -21,6 +21,7 @@ class HideSettings(ScrollDialog):
         self.add_option("working_stations_name", "Show Working Stations Name", indent=1)
         self.add_option("objects", "Show Objects")
         self.add_option("objects_name", "Show Objects Name", indent=1)
+        self.add_option("coordinate_system", "Show Coordinate System")
 
     def on_confirm(self):
         for hide in self.hide_list:
