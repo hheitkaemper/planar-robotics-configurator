@@ -332,6 +332,7 @@ class EnvironmentMap(MDWidget):
         self.scatter.movers_collision_canvas.clear()
         self.scatter.working_stations_canvas.clear()
         self.scatter.objects_canvas.clear()
+        self.scatter.coordinate_system_canvas.clear()
 
     def redraw(self):
         """
