@@ -3,6 +3,8 @@ from planar_robotics_configurator.model.environment.environment import Environme
 from planar_robotics_configurator.model.environment.mover_preset import MoverPreset
 from planar_robotics_configurator.model.algorithm.algorithm import Algorithm, ConfigAlgorithm
 from planar_robotics_configurator.model.algorithm.algorithm_configuration import AlgorithmConfiguration
+from planar_robotics_configurator.model.environment.parameter_group import ConfigParameterGroup, \
+    ParameterGroupConfiguration, ParameterGroup
 
 
 class ConfiguratorModel:
@@ -21,6 +23,7 @@ class ConfiguratorModel:
         self.mover_presets: list[MoverPreset] = []
         self.algorithms: list[Algorithm] = []
         self.algorithm_configurations: list[AlgorithmConfiguration] = []
+        self.environment_parameter_config: list[ParameterGroupConfiguration] = []
 
     def __new__(cls, *args, **kwargs):
         if not cls.instance:
@@ -32,3 +35,14 @@ class ConfiguratorModel:
             self.algorithms.append(ConfigAlgorithm.to_algorithm(algorithm))
         for preset in config.mover_presets:
             self.mover_presets.append(preset)
+        for parameter_group in config.environment_parameter:
+            self.environment_parameter_config.append(ConfigParameterGroup.to_parameter_group_configuration(parameter_group))
+
+    def get_parameter_groups(self) -> list[ParameterGroup]:
+        """
+        Returns a list of all parameter_groups.
+        """
+        parameter_groups: list[ParameterGroup] = []
+        for parameter_group_config in self.environment_parameter_config:
+            parameter_groups.append(parameter_group_config.to_parameter_group())
+        return parameter_groups

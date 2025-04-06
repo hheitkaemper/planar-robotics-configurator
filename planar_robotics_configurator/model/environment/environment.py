@@ -1,7 +1,9 @@
 from dataclasses import dataclass, field
+
 import numpy as np
 from gymnasium_planar_robotics.envs.basic_envs import BasicPlanarRoboticsEnv
 
+from planar_robotics_configurator.model.environment.parameter_group import ParameterGroup, ParameterGroupConfiguration
 from planar_robotics_configurator.model.environment.mover import Mover
 from planar_robotics_configurator.model.environment.object import Object, RefObject, CubeObject, BallObject
 from planar_robotics_configurator.model.environment.working_station import WorkingStation
@@ -25,11 +27,10 @@ class Environment:
     :param v_max: Maximal velocity.
     :param j_max: Maximal jerk.
     :param learn_jerk: Should the jerk be learned.
-    :param min_friction: Minimal friction.
-    :param max_friction: Max friction.
     :param movers: List of movers in the environment.
     :param working_stations: List of working stations in the environment.
     :param objects: List of objects in the environment.
+    :param parameters: List of parameter groups which contains all additional parameters.
     """
     name: str
     num_width: int
@@ -42,20 +43,10 @@ class Environment:
     initial_mover_zpos: float
     table_height: float
     std_noise: float
-    min_mass: float
-    max_mass: float
-    a_max: float
-    v_max: float
-    j_max: float
-    learn_jerk: bool
-    num_circles: int
-    offset: float
-    offset_wall: float
-    min_friction: float
-    max_friction: float
     movers: list[Mover] = field(default_factory=list)
     working_stations: list[WorkingStation] = field(default_factory=list)
     objects: list[Object] = field(default_factory=list)
+    parameters: list[ParameterGroup] = field(default_factory=list)
 
     def __post_init__(self):
         self.init_tiles()
@@ -201,17 +192,6 @@ class Environment:
         config['initial_mover_zpos'] = self.initial_mover_zpos
         config['table_height'] = self.table_height
         config['std_noise'] = self.std_noise
-        config['min_mass'] = self.min_mass
-        config['max_mass'] = self.max_mass
-        config['a_max'] = self.a_max
-        config['v_max'] = self.v_max
-        config['j_max'] = self.j_max
-        config['learn_jerk'] = self.learn_jerk
-        config['num_circles'] = self.num_circles
-        config['offset'] = self.offset
-        config['offset_wall'] = self.offset_wall
-        config['min_friction'] = self.min_friction
-        config['max_friction'] = self.max_friction
         config['num_movers'] = len(self.movers)
         mover_config = {}
         for idx, mover in enumerate(self.movers):
@@ -227,20 +207,19 @@ class Environment:
         for idx, working_station in enumerate(self.working_stations):
             working_stations_config[idx] = working_station.to_config()
         config['working_stations'] = working_stations_config
+        for parameter_group in self.parameters:
+            for parameter in parameter_group.parameters:
+                parameter.to_config(parameter_group.prefix, config)
         return config
 
     @staticmethod
-    def from_config(name, config):
+    def from_config(name, config, parameter_groups: list[ParameterGroup]):
         environment = Environment(name=name, num_width=config["width"], num_length=config["length"],
                                   tile_width=config["tile_width"] * 2, tile_length=config["tile_length"] * 2,
                                   tile_height=config["tile_height"] * 2, tile_mass=config["tile_mass"],
                                   initial_mover_zpos=config["initial_mover_zpos"], table_height=config["table_height"],
-                                  std_noise=config["std_noise"], min_mass=config["min_mass"],
-                                  max_mass=config["max_mass"], a_max=config["a_max"], v_max=config["v_max"],
-                                  min_friction=config["min_friction"], max_friction=config["max_friction"],
-                                  num_circles=config["num_circles"], offset=config["offset"],
-                                  offset_wall=config["offset_wall"], j_max=config["j_max"],
-                                  learn_jerk=config["learn_jerk"])
+                                  std_noise=config["std_noise"],
+                                  parameters=parameter_groups)
         environment.tiles = np.array([int(x) for x in config["tiles"]]).reshape((environment.num_width,
                                                                                  environment.num_length))
         for x in range(config["num_movers"]):
@@ -257,4 +236,7 @@ class Environment:
                 environment.objects.append(CubeObject.from_config(str(x), object_config))
             if object_config["type"] == "sphere":
                 environment.objects.append(BallObject.from_config(str(x), object_config))
+        for parameter_group in environment.parameters:
+            for parameter in parameter_group.parameters:
+                parameter.from_config(parameter_group.prefix, config)
         return environment

@@ -147,7 +147,8 @@ class ImportContainer(MDBoxLayout):
             try:
                 config = hydra_zen.load_from_yaml(file_name)
                 ConfiguratorModel().environments.append(
-                    Environment.from_config(self.environment_name.text, config["env"]))
+                    Environment.from_config(self.environment_name.text, config["env"],
+                                            ConfiguratorModel().get_parameter_groups()))
                 info["env"] = "Successfully imported environment configuration."
             except FileNotFoundError:
                 info["env"] = "Failed importing environment. File with name {file_name} not found."

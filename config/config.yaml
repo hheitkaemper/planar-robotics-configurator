@@ -25,3 +25,69 @@ mover_presets:
     length: 0.155
     height: 0.012
     mass: 1.8
+
+environment_parameter:
+  - name: Movers
+    prefix:
+    parameters:
+      - name: Collision shape safety margin
+        code: offset
+        hint: In meter
+        type: float
+        default: 0.0
+      - name: Wall safety margin
+        code: offset_wall
+        hint: In meter
+        type: float
+        default: 0.0
+      - name: Number of circles
+        code: num_circles
+        hint:
+        type: int
+        default: 40
+      - name: Max Velocity
+        code: v_max
+        hint: In meter per second
+        type: float
+        default: 2.0
+      - name: Max Acceleration
+        code: a_max
+        hint: In meter per second squared
+        type: float
+        default: 10.0
+  - name: Objects
+    prefix:
+    parameters:
+      - name: Min Mass
+        code: min_mass
+        hint: In kilograms
+        type: float
+        default: -1
+      - name: Max Mass
+        code: max_mass
+        hint: In kilograms
+        type: float
+        default: -1
+      - name: Min Friction
+        code: min_friction
+        hint:
+        type: float
+        default: -1
+      - name: Max Friction
+        code: max_friction
+        hint:
+        type: float
+        default: -1
+  - name: Jerk
+    prefix:
+    parameters:
+      - name: Learn Jerk
+        code: learn_jerk
+        hint:
+        type: boolean
+        default: false
+      - name: Max Jerk
+        code: j_max
+        hint: In meter per second to the power of three
+        type: float
+        default: 100.0
